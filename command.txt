@@ -1,0 +1,23 @@
+    >>>>COMMAND<<<<<
+
+npx hardhat node    //local blockchain
+
+npx hardhat clean && npx hardhat compile       
+npx hardhat test  
+
+npx hardhat run --network localhost scripts/deploy.ts
+npx hardhat run --network goerli scripts/deploy.ts
+
+npx hardhat verify 0x77...777 --network goerli
+
+
+ >>>>>> CONSOLE <<<<<<<<
+
+    >npx hardhat console      
+       import "hardhat/console.sol";
+       function {
+            console.log(owner, block.timestamp);
+       }
+
+    
+        
