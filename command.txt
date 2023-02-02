@@ -14,10 +14,11 @@ npx hardhat verify 0x77...777 --network goerli
  >>>>>> CONSOLE <<<<<<<<
 
     >npx hardhat console      
-       import "hardhat/console.sol";
-       function {
-            console.log(owner, block.timestamp);
-       }
 
-    
+address = '0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0'
+const c = await ethers.getContractAt("BoxV2", 0x19752824d048aD975e7b48e098A84489252451cf)
+await boxv2.retrieve()
+//BigNumber { value: "42" }
+
+await boxv2.increment()
         
