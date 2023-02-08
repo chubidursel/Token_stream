@@ -6,9 +6,9 @@ npx hardhat clean && npx hardhat compile
 npx hardhat test  
 
 npx hardhat run --network localhost scripts/deploy.ts
-npx hardhat run --network goerli scripts/deploy.ts
+npx hardhat run --network goerli scripts/deployCompany.ts
 
-npx hardhat verify 0x77...777 --network goerli
+npx hardhat verify --network goerli 0x93b0920DC586745DEDB26514144f0eC197bb30c9 "Tesla" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
 
 
  >>>>>> CONSOLE <<<<<<<<
