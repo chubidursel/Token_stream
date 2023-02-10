@@ -11,8 +11,10 @@ import "./StreamLogic.sol";
 contract Company is StreamLogic {
 
     // ADD EVENTS
-    event AddEmployee(address _who, uint _time);
-    event StartFlow(address _who, uint _time);
+    event AddEmployee(address _who, uint _rate);
+    event StartFlow(address _who, uint _rate);
+    event FinishFlow(address _who, uint _earned);
+
 
     string public name;
     uint public totalAmountEmployee;
@@ -28,6 +30,12 @@ contract Company is StreamLogic {
         //bool what kind of sallary he s going to get >>> h/$ or $/mounth
     }
     mapping(address => Employee) public allEmployee;
+
+    address[] public allEmployeeList;
+
+    function amountEmployee()public view returns(uint){
+        return allEmployeeList.length;
+    }
 
     modifier employeeExists(address _who){
             require(allEmployee[_who].worker, "This employee doesnt exist or deleted already");
@@ -48,19 +56,24 @@ contract Company is StreamLogic {
 
 		allEmployee[_who] = newEmployee;
 
-        totalAmountEmployee++;
+        allEmployeeList.push(_who);
 
-        emit AddEmployee(_who, block.timestamp);
+        commonRateAllEmployee += _rate;
+
+        emit AddEmployee(_who, _rate);
     }
 
     function modifyRate(address _who, uint256 _rate) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned {
-        require(getStream[_who].active, "You can change rate while streaming");
+        require(!getStream[_who].active, "You can change rate while streaming");
         allEmployee[_who].flowRate = _rate;
     }
 
     function deleteEmployee(address _who) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned{
-        require(getStream[_who].active, "You can change rate while streaming");
-        delete allEmployee[_who];
+        require(!getStream[_who].active, "You can delete employee while streaming");
+
+        commonRateAllEmployee -= getStream[_who].rate;
+
+        _removeEmployee(_who);
     }
 
 //-------------------- SECURITY --------------
@@ -88,12 +101,14 @@ contract Company is StreamLogic {
     }
 
     // Solution #3 (restriction to add new employee)
-     uint public hoursLimitToAddNewEmployee = 10 hours;
+    uint public hoursLimitToAddNewEmployee = 10 hours;
 
-     function validToAddNew(uint _newRate)private view returns(bool){
+    uint public commonRateAllEmployee;
 
-            // IE   900    =        2+1             *         20+10     *    100
-        uint tokenLimit = (totalAmountEmployee + 1) * (CR + _newRate) * hoursLimitToAddNewEmployee;
+    function validToAddNew(uint _newRate)private view returns(bool){
+
+            // IE   900    =        2+1             *         20+10     *    10
+        uint tokenLimit = (totalAmountEmployee + 1) * (commonRateAllEmployee + _newRate) * hoursLimitToAddNewEmployee;
 
         return tokenLimit < balanceContract();
         //PS "If company doesnt have enought tokens to pay all employee for next 100 hours they can add new employee"
@@ -109,7 +124,10 @@ contract Company is StreamLogic {
         require(validToStream(_who), "Balance is very low");
         require(validToStreamAll(), "Balance is very low for all");
 
-        startStream(_who, allEmployee[_who].flowRate);
+        uint rate =  allEmployee[_who].flowRate;
+
+        startStream(_who, rate);
+        emit StartFlow(_who, rate);
     }
 
     function finish(address _who) public employeeExists(_who) ownerOrAdministrator {
@@ -118,6 +136,7 @@ contract Company is StreamLogic {
         //     function ifyouEmployDolboeb()
         // }
         token.transfer(_who, salary);
+        emit FinishFlow(_who, salary);
     }
 
     // function withdrawEployee()public{
@@ -138,6 +157,30 @@ contract Company is StreamLogic {
         // Check Admin?
         // Check amount?
         return validToAddNew(10);
+    }
+
+    	// ----- FUNC to DELETE ELEMENT ADDRESS from activeStreamAddress
+	function _indexEmployee(address searchFor) private view returns (uint256) {
+  		for (uint256 i = 0; i < allEmployeeList.length; i++) {
+    		if (allEmployeeList[i] == searchFor) {
+      		return i;
+    		}
+  		}
+  		revert("Not Found");
+	}
+
+	function _removeEmployee(address _removeAddr) private {
+
+		uint index = _indexEmployee(_removeAddr);
+
+        if (index > allEmployeeList.length) return;
+
+        allEmployee[_removeAddr].worker = false; 
+
+        for (uint i = index; i < allEmployeeList.length -1; i++){
+            allEmployeeList[i] = allEmployeeList[i+1];
+        }
+        allEmployeeList.pop();
     }
 
     receive() external payable { }

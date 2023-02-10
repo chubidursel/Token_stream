@@ -71,7 +71,7 @@ contract StreamLogic is TokenAdmin {
 	function finishStream(address _who) internal returns(uint256){
 		require(getStream[_who].active, "This user doesnt have an active stream");
 		
-		uint retunrTokenAmount;
+		uint256 retunrTokenAmount;
 		
 		// IF Liquidation -> return as much token as employee earned and write in debt list
 		if(block.timestamp > EFT){
@@ -229,7 +229,6 @@ contract StreamLogic is TokenAdmin {
 
 	function calculateETF(uint _rate)public {
 		// FORMULA	[new stream]	Bal / Rate = secLeft  --> timestamp + sec
-
 		if(EFT == 0){
 			CR += _rate;
 			uint sec = balanceContract() / _rate;
@@ -296,7 +295,7 @@ contract StreamLogic is TokenAdmin {
 
         if (index > activeStreamAddress.length) return;
 
-        for (uint i = index; i < activeStreamAddress.length; i++){
+        for (uint i = index; i < activeStreamAddress.length -1; i++){
             activeStreamAddress[i] = activeStreamAddress[i+1];
         }
         activeStreamAddress.pop();
