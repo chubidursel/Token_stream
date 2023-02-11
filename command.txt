@@ -5,20 +5,32 @@ npx hardhat node    //local blockchain
 npx hardhat clean && npx hardhat compile       
 npx hardhat test  
 
-npx hardhat run --network localhost scripts/deploy.ts
-npx hardhat run --network goerli scripts/deployFactory.ts
+npx hardhat run --network localhost scripts/deployCompany.ts
+npx hardhat run --network goerli scripts/deployCompany.ts
 
-npx hardhat verify --network goerli 0x93b0920DC586745DEDB26514144f0eC197bb30c9 "Tesla" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
+npx hardhat verify --network goerli 0x27f5478783049e951400eCA89E942f0A709595B2 "Adidas" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
 npx hardhat verify --network goerli 0xB8Da80Ffa575Ce04C4Cf91e0Caf8fb5B28C28920
 
  >>>>>> CONSOLE <<<<<<<<
 
-    >npx hardhat console      
+    > npx hardhat console --network goerli    
 
-address = '0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0'
-const c = await ethers.getContractAt("BoxV2", 0x19752824d048aD975e7b48e098A84489252451cf)
-await boxv2.retrieve()
-//BigNumber { value: "42" }
+const contract = await ethers.getContractAt("Company", '0x27f5478783049e951400eCA89E942f0A709595B2')
+const contractUSDT = await ethers.getContractAt("StableCoin", '0xD049815A3d490CBCF73415A65384652D5F15a367')
 
-await boxv2.increment()
-        
+await contract.setToken("0xD049815A3d490CBCF73415A65384652D5F15a367")
+
+await contract.changeAdmin("0x1AFaF7463894656662E6BdcbDC77522775E6acbB")
+
+----- GET INFO ----
+(await contract.currentBalanceContract()).toNumber()
+(await contract.currentBalanceEmployee("0x35fe6f7077886Bf5C4890f4D180F09831431A3cF")).toNumber()
+
+(await contract.amountActiveStreams()).toNumber()
+(await contract.amountEmployee()).toNumber()
+
+(await contract.EFT()).toNumber()
+(await contract.CR()).toNumber()
+
+(await contractUSDT.balanceOf("0x35fe6f7077886Bf5C4890f4D180F09831431A3cF")).toNumber()
+

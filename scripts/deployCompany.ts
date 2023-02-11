@@ -6,7 +6,7 @@ async function main() {
   const [deployer] = await ethers.getSigners();
 
   const Contract = await ethers.getContractFactory("Company");
-  const contract = await Contract.deploy("Tesla", deployer.address);
+  const contract = await Contract.deploy("Adidas", deployer.address);
 
   await contract.deployed();
 

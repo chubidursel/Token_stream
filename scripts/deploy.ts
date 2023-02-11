@@ -4,7 +4,7 @@ async function main() {
 
   console.log("🚀 deploying scmart contract.....");
   
-  const Contract = await ethers.getContractFactory("Storage");
+  const Contract = await ethers.getContractFactory("Test");
   const contract = await Contract.deploy();
 
   await contract.deployed();

@@ -15,9 +15,7 @@ contract Company is StreamLogic {
     event StartFlow(address _who, uint _rate);
     event FinishFlow(address _who, uint _earned);
 
-
     string public name;
-    uint public totalAmountEmployee;
 
     constructor (string memory _name, address _addressOwner)StreamLogic(_addressOwner){
         name = _name;
@@ -33,7 +31,7 @@ contract Company is StreamLogic {
 
     address[] public allEmployeeList;
 
-    function amountEmployee()public view returns(uint){
+    function amountEmployee() public view returns(uint){
         return allEmployeeList.length;
     }
 
@@ -76,14 +74,14 @@ contract Company is StreamLogic {
         _removeEmployee(_who);
     }
 
-//-------------------- SECURITY --------------
+//-------------------- SECURITY / BUFFER --------------
 // Set up all restrictoins tru DAO?
 
     //Solution #1 (restriction on each stream)
     uint public tokenLimitMaxHoursPerPerson = 20 hours; // Max amount hours of each stream with enough funds;
 
     function validToStream(address _who)private view returns(bool){
-         return (allEmployee[_who].flowRate * tokenLimitMaxHoursPerPerson ) < balanceContract();
+         return (allEmployee[_who].flowRate * tokenLimitMaxHoursPerPerson ) < currentBalanceContract();
     }
 
    
@@ -97,7 +95,7 @@ contract Company is StreamLogic {
                 // IE     400    =        2         *      20     *     10
         uint allStreamLimitToken = amountActiveStreams() * CR * tokenLimitMaxHoursAllStream;
 
-        return allStreamLimitToken < balanceContract();
+        return allStreamLimitToken < currentBalanceContract();
     }
 
     // Solution #3 (restriction to add new employee)
@@ -108,14 +106,18 @@ contract Company is StreamLogic {
     function validToAddNew(uint _newRate)private view returns(bool){
 
             // IE   900    =        2+1             *         20+10     *    10
-        uint tokenLimit = (totalAmountEmployee + 1) * (commonRateAllEmployee + _newRate) * hoursLimitToAddNewEmployee;
+        uint tokenLimit = (amountEmployee() + 1) * (commonRateAllEmployee + _newRate) * hoursLimitToAddNewEmployee;
 
-        return tokenLimit < balanceContract();
+        return tokenLimit < currentBalanceContract();
         //PS "If company doesnt have enought tokens to pay all employee for next 100 hours they can add new employee"
      }
 
-     //---- ADD BUFFER ---------
-     // rate / time /  money
+     function setHLAddnewEmployee(uint _newLimit) internal activeStream ownerOrAdministrator{
+        // How can set this func? Mini DaO?
+        hoursLimitToAddNewEmployee = _newLimit;
+     }
+
+     
 
 
 // -------------- FUNCS with EMPLOYEEs ----------------

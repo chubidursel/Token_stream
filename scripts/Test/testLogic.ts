@@ -7,7 +7,7 @@ import { ethers } from "hardhat";
 async function main() {
   console.log("Starting 🏃")
 
-  const [deployer, acc1, acc2, admin] = await ethers.getSigners();
+  const [deployer, acc1, acc2, acc3, acc4, acc5, acc6, admin] = await ethers.getSigners();
 
 // ----------------CONTRACTS---------------------
   const Contract = await ethers.getContractFactory("Company");
@@ -62,7 +62,7 @@ async function main() {
 
  // ------------------  CHECK COMPANY RESTRICTIONS ------------------
  console.log("---------📈 BUFFER INFO 📈------------")
-    const totalAmountEmployees = (await contract.totalAmountEmployee()).toNumber();
+    const totalAmountEmployees = (await contract.amountEmployee()).toNumber();
     const cRrate = (await contract.commonRateAllEmployee()).toNumber();
     const hoursLimit = (await contract.hoursLimitToAddNewEmployee()).toNumber();
     const res = totalAmountEmployees * cRrate * hoursLimit;
@@ -200,7 +200,87 @@ async function main() {
   const txDelete = await contract.deleteEmployee(acc2.address)
   console.log(`🗑️ Amount of all employee: ${(await contract.amountEmployee()).toNumber()}`)
   console.log(`🗑️ Employee info: ${(await contract.allEmployee(acc2.address))}`)
+
+
+  console.log()
+  console.log("#####################    PART III  [ 5 streams ] #######################")
+
+  await contract.addEmployee(acc3.address, 21); 
+  await contract.addEmployee(acc4.address, 10); 
+  await contract.addEmployee(acc5.address, 10);
+  await contract.addEmployee(acc6.address, 12);
+
+  console.log("✅ Add 4 Employess ")
+ 
+  console.log("---------📈 BUFFER INFO 📈------------")
+  const totalAmountEmployees2 = (await contract.amountEmployee()).toNumber();
+  const cRrate2 = (await contract.commonRateAllEmployee()).toNumber();
+  const hoursLimit2 = (await contract.hoursLimitToAddNewEmployee()).toNumber();
+  const res2 = totalAmountEmployees2 * cRrate2 * hoursLimit2;
+
+  const scBal2 = (await contract.balanceContract()).toNumber();
+  console.log(`📈 Calculation Math to add new employee:  ${totalAmountEmployees2} * ${cRrate2} * ${hoursLimit2} = ${res2} `)
+  console.log("📈Valid TO ADD // Balance: ", scBal2)
+  console.log("📈 Can I add new Employee ", (scBal2 > res2))
+  console.log("📈 Time different", (scBal2 - res2))
+
+  console.log("💥💥💥💥 STREAMING BEGIN 💥💥💥💥 ")
+
+ await contract.start(acc1.address);
+ console.log("📈🟡🟡 < CUR_BALANCE: ", (await contract.currentBalanceContract()).toNumber())
+
+ await contract.start(acc3.address);
+ await contract.start(acc4.address);
+
+ console.log("📈 P-II [validToStream] Formula {HOURS * RATE < BALANCE}: ", (await contract.tokenLimitMaxHoursPerPerson()).toNumber(), "*" ,  ((await contract.getStream(acc1.address)).rate).toNumber())
+
+ const actStr = (await contract.amountActiveStreams()).toNumber();
+ const cr = (await contract.CR()).toNumber();
+ const hLimit = (await contract.tokenLimitMaxHoursAllStream()).toNumber()
+ const res7 = actStr * cr * hLimit
+ console.log(`📈 P-III [validToStreamAll] Formula {ActSream * CR * HOURS < CUR_BAL}: ${actStr} * ${cr} * ${hLimit} = ${res7}`)
+ console.log(`📈 P-III CUR_BAL - RES : ${(await contract.currentBalanceContract()).toNumber()} - ${res7} = ${(await contract.currentBalanceContract()).toNumber() - res7} << Company would pay if all streams will be active for next 10 hours`)
+ console.log("👷 3 Employee Statred")
+
+ const blockTimestamp5 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+ await ethers.provider.send("evm_mine", [blockTimestamp5 + 20]); // <- 10 sec
+ console.log("⌛   Wait 20 sec ...")
+
+ console.log("---------STREAM INFO ------------")
+ console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+ console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+ console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+ console.log("📄Stream [EFT - NOW ]: ", (await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp)
+ console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
+ console.log("-------------------------")
+
+ const blockTimestamp6 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+ await ethers.provider.send("evm_mine", [blockTimestamp6 + 10]); // <- 10 sec
+ console.log("⌛   Wait 10 sec ...")
+
+ console.log("---------STREAM INFO ------------")
+ console.log("📄Stream [EFT - NOW ] in HOURS: ", ((await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp) / 60 / 60 )
+ console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
+ console.log("-------------------------")
   
+ await contract.start(acc5.address);
+ await contract.start(acc6.address);
+ console.log("👷 + 2 Employee Statred")
+
+ const blockTimestamp7 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+ await ethers.provider.send("evm_mine", [blockTimestamp7 + 200]); // <- 10 sec
+ console.log("⌛   Wait 200 sec ...")
+
+ console.log("---------STREAM INFO ------------")
+ console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+ console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+ console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+ console.log("📄Stream [EFT - NOW ] in HOURS: ", ((await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp) / 60 / 60 )
+ console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
+ console.log("-------------------------")
+
+
+
   console.log(`🏁 FINISHED 🏁`);
 }
 
