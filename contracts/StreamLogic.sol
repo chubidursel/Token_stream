@@ -3,34 +3,34 @@ pragma solidity ^0.8.17;
 
 import "./TokenAdmin.sol";
 
+/// @author Chubiduresel 
+/// @title Stream logic and functions
 contract StreamLogic is TokenAdmin {
-
-    // ---------- ERORS ----------
-    error Unauthorized();
 
     // --------- Events ----------
     event StreamCreated(Stream stream);
 
-	event StreamFinished(address who, uint tokenEarned, uint endsAt);
+	event StreamFinished(address who, uint tokenEarned, uint endsAt, uint startedAt);
+
+	event StreamAllFinished(uint amount, uint endsAt);
 
 	event Liqudation(address _whoCall);
 
 	constructor(address _owner) TokenAdmin(_owner){}
 
 
-    /// @dev Parameters for streams
-	/// @param sender The address of the creator of the stream
-	/// @param recipient The address that will receive the streamed tokens
-	/// @param rate How many token pro sec
-
+    /// @notice Parameters of stream object
+	/// @param rate Employee rate (Token / second)
+	/// @param startAt Block.timestamp when employee start streaming
+	/// @param active Active stream
+	/// @param streamId Amount of stream 
     struct Stream {
-		uint256 rate; //holiday rate
+		uint256 rate; 
 		uint256 startAt; 
         bool active;
 		uint32 streamId;
 	}
 
-    //mapping(address => mapping(uint8 => Stream)) public getStream;  //uint256 internal streamId = 1;
 	mapping(address => Stream) public getStream;
 
 	address[] public activeStreamAddress;
@@ -44,7 +44,12 @@ contract StreamLogic is TokenAdmin {
 		return activeStreamAddress.length;
 	}
 
-    //------------ MAIN FUNCS [STREAM]----------
+	/**
+     * @notice Create new stream 
+     * @dev Function is called from the company contract
+     * @param _recipient The employee address
+     * @param _rate The rate of employee (Token / second)
+     */
     function startStream(address _recipient, uint256 _rate) internal isLiquidationHappaned{
 		require(!getStream[_recipient].active, "This guy already has stream");
 		require(newStreamCheckETF(_rate), "Contract almost Liquidated. Check Balance!");
@@ -68,6 +73,15 @@ contract StreamLogic is TokenAdmin {
 		emit StreamCreated(stream);
 	}
 
+	/**
+     * @notice Finish stream 
+     * @dev Function is called from the company contract.
+	 If time passed ETF deadline, contract call turn into Liqudation mode.
+	 Employee recieves all token from contract, if it doesnt cover all money he earned, 
+	 the rest will be written in debtToEmployee mapping, and pay out as soon as company
+	 pop up balace and call function finishLiqudation()
+     * @param _who The employee address
+     */
 	function finishStream(address _who) internal returns(uint256){
 		require(getStream[_who].active, "This user doesnt have an active stream");
 		
@@ -93,16 +107,18 @@ contract StreamLogic is TokenAdmin {
 		getStream[_who].active = false;
 		getStream[_who].startAt = 0;
 
- 		emit StreamFinished(_who, retunrTokenAmount, block.timestamp);
+		//event StreamFinished(address who, uint tokenEarned, uint endsAt, uint startedAt);
+
+ 		emit StreamFinished(_who, retunrTokenAmount, block.timestamp, getStream[_who].startAt);
 	
 		return retunrTokenAmount;
 	}
 
-	
-
-
+	/// @notice Finish all active streams
+	/// @dev This function is called from outside
+	/// @dev Reset ETF and CR to Zero and delete all streams from the list
 	function finishAllStream() public {
-		require(amountActiveStreams() == 0, "No active streams!");
+		require(amountActiveStreams() != 0, "No active streams!");
 
 	
 		if(block.timestamp > EFT){
@@ -131,21 +147,20 @@ contract StreamLogic is TokenAdmin {
 			}
 		}
 
+		emit StreamAllFinished(activeStreamAddress.length, block.timestamp);
+
 		activeStreamAddress = new address[](0);
 
 		CR = 0;
 		EFT = 0;
 	}
 
-// FUNCTION IF employee had break
-
- 	//------------ ADDITION FUNCS [TRANSFER]----------
-	// function sendFunds(address _who) public {
-	// 	require(msg.sender == getStream[_who], "You are not able to transact");
-	// }
-
-
-		//------------ CHECK BALANCES----------
+	//------------ CHECK BALANCES----------
+	/**
+     * @notice Check employee`s balance 
+     * @param _who The employee address
+     * @return amount of token that employee earns at moment this function is called
+     */	
     function currentBalanceEmployee(address _who) public view returns(uint256){
 		if(!getStream[_who].active) return 0;
 
@@ -153,7 +168,9 @@ contract StreamLogic is TokenAdmin {
 		uint timePassed = block.timestamp - getStream[_who].startAt;
 		return rate * timePassed;
 	}
-
+	/// @notice Check company`s balance
+	/// @dev If it returns 1, it means that contract doesnt have enough funds to pay for all streams (Liquidation)
+    /// @return amount of token thet company posses at the moment this function is called
 	function currentBalanceContract()public view returns(uint256){
 		
 		if(amountActiveStreams() == 0){
@@ -173,14 +190,17 @@ contract StreamLogic is TokenAdmin {
 		return  balanceContract() - snapshotAllTransfer;
 	}
 
-
+	/**
+     * @notice Check employee`s debt balance
+     * @param _who The employee address
+     * @return amount of token that company owns to the employee
+     */	
 	function currentBalanceLiquidation(address _who) public view returns(uint256){
 		uint rate = getStream[_who].rate;
 		uint timePassed = EFT - getStream[_who].startAt;
 		return rate * timePassed;
 	}
 
-    //-----------  Liquidation  -------------
 	modifier isLiquidationHappaned(){
             require(!liqudation, "Liqudation happened!!!");
             _;
@@ -191,7 +211,7 @@ contract StreamLogic is TokenAdmin {
 
 	bool public liqudation;
 
-
+	///@notice Calculate the total amount of debt for the company
 	function _totalDebt() public view returns(uint){
 		uint num;
 		for(uint i = 0; i < addrListDebt.length; i++){
@@ -248,6 +268,7 @@ contract StreamLogic is TokenAdmin {
 		} else if((amountActiveStreams() -1) == 0){
 			// -1 because we remove address from arr before call this func
 			// IF there was the last employee we reset the whole num
+			CR = 0;
 			EFT = 0;
 			return;
 		}else {
@@ -300,4 +321,5 @@ contract StreamLogic is TokenAdmin {
         }
         activeStreamAddress.pop();
     }
+	
 }

@@ -13,4 +13,11 @@ contract StableCoin is ERC20, ERC20Burnable, Ownable {
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
+
+    mapping(address=>bool)public faucetUsed;
+
+    function faucet() internal {
+        require(!faucetUsed[msg.sender], "You have used this faucet");
+         _mint(msg.sender, 7_000_000_000);
+    }
 }

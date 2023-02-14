@@ -19,13 +19,8 @@ async function main() {
   const ContractFactory = await ethers.getContractFactory("CompanyFactory");
   const contractFactory = await ContractFactory.deploy();
 
-  //await contract.deployed();
   await contractUSDT.deployed();
-
-
- 
-  const addressUSDT = contractUSDT.address;
-
+  
    // ------------------ TX_COMPANY_SETTING ------------------  
    const txF = await contractFactory.createCompany("Tesla");
    await txF.wait()
@@ -34,20 +29,19 @@ async function main() {
    let eventFilter = contractFactory.filters.Creation();
    let events = await contractFactory.queryFilter(eventFilter);
    const addressCompany = events[0].args[0]
-
+   
 // SETTING NEW CONTRACT FROM FACTORY
-   const contract = await Contract.attach(
+   const contract = Contract.attach(
     addressCompany
   );
 
-
-  console.log("New Contract Company: ", addressCompany)
+  console.log("🆕 New Contract Company: ", addressCompany)
 
  
   console.log("✅ All Contracts has been deployed!")
 
   // ------------------ TX_COMPANY_SETTING ------------------   
-    const tx = await contract.setToken(addressUSDT);
+    const tx = await contract.setToken(contractUSDT.address);
     console.log("✅ Token_set|| GasPrice: ", tx.gasPrice?.toString())
 
   const txCoin = await contractUSDT.mint(contract.address, 1_000_000_000)
@@ -62,16 +56,10 @@ async function main() {
 
  // ------------------  CHECK COMPANY RESTRICTIONS ------------------
  console.log("---------📈 BUFFER INFO 📈------------")
-    const totalAmountEmployees = (await contract.amountEmployee()).toNumber();
-    const cRrate = (await contract.commonRateAllEmployee()).toNumber();
-    const hoursLimit = (await contract.hoursLimitToAddNewEmployee()).toNumber();
-    const res = totalAmountEmployees * cRrate * hoursLimit;
 
     const scBal = (await contract.balanceContract()).toNumber();
-    console.log(`📈 Calculation Math to add new employee:  ${totalAmountEmployees} * ${cRrate} * ${hoursLimit} = ${res} `)
-    console.log("📈Valid TO ADD // Balance: ", scBal)
-    console.log("📈 Can I add new Employee ", (scBal > res))
-    console.log("📈 Time different", (scBal - res))
+    console.log(`📈 [SOL#3] Token Limit to add new Employee:  ${(await contract.getTokenLimitToAddNewEmployee(10)).toNumber()}`)
+    console.log("📈 [SOL#3] Balance - Limit = ", (scBal - (await contract.getTokenLimitToAddNewEmployee(10)).toNumber()))
     
 
  // ------------------ ACCESS CONTROL FUNC ------------------
@@ -84,7 +72,11 @@ async function main() {
  // ------------------ TX_COMPANY_OPERATION ------------------ 
  console.log()
  console.log("💥💥💥💥 STREAMING #1 STARTED 💥💥💥💥 ")
-  const tx5 = await contract.start(acc1.address);
+
+ console.log(`📈 [SOL#1] Token Limit to Start 1 STREAM:  ${(await contract.getTokenLimitToStreamOne(acc1.address)).toNumber()}`)
+ console.log("📈 [SOL#1] Balance - Limit = ", ((await contract.balanceContract()).toNumber() - (await contract.getTokenLimitToStreamOne(acc1.address)).toNumber()))
+ 
+   const tx5 = await contract.start(acc1.address);
   console.log("👷 Emplployee #1 Came to Work || GasPrice: ", tx5.gasPrice?.toString())
 
   // console.log("Stream info about employee: ", await contract.getStream(acc1.address))
@@ -213,33 +205,13 @@ async function main() {
   console.log("✅ Add 4 Employess ")
  
   console.log("---------📈 BUFFER INFO 📈------------")
-  const totalAmountEmployees2 = (await contract.amountEmployee()).toNumber();
-  const cRrate2 = (await contract.commonRateAllEmployee()).toNumber();
-  const hoursLimit2 = (await contract.hoursLimitToAddNewEmployee()).toNumber();
-  const res2 = totalAmountEmployees2 * cRrate2 * hoursLimit2;
-
-  const scBal2 = (await contract.balanceContract()).toNumber();
-  console.log(`📈 Calculation Math to add new employee:  ${totalAmountEmployees2} * ${cRrate2} * ${hoursLimit2} = ${res2} `)
-  console.log("📈Valid TO ADD // Balance: ", scBal2)
-  console.log("📈 Can I add new Employee ", (scBal2 > res2))
-  console.log("📈 Time different", (scBal2 - res2))
 
   console.log("💥💥💥💥 STREAMING BEGIN 💥💥💥💥 ")
 
  await contract.start(acc1.address);
- console.log("📈🟡🟡 < CUR_BALANCE: ", (await contract.currentBalanceContract()).toNumber())
-
  await contract.start(acc3.address);
  await contract.start(acc4.address);
 
- console.log("📈 P-II [validToStream] Formula {HOURS * RATE < BALANCE}: ", (await contract.tokenLimitMaxHoursPerPerson()).toNumber(), "*" ,  ((await contract.getStream(acc1.address)).rate).toNumber())
-
- const actStr = (await contract.amountActiveStreams()).toNumber();
- const cr = (await contract.CR()).toNumber();
- const hLimit = (await contract.tokenLimitMaxHoursAllStream()).toNumber()
- const res7 = actStr * cr * hLimit
- console.log(`📈 P-III [validToStreamAll] Formula {ActSream * CR * HOURS < CUR_BAL}: ${actStr} * ${cr} * ${hLimit} = ${res7}`)
- console.log(`📈 P-III CUR_BAL - RES : ${(await contract.currentBalanceContract()).toNumber()} - ${res7} = ${(await contract.currentBalanceContract()).toNumber() - res7} << Company would pay if all streams will be active for next 10 hours`)
  console.log("👷 3 Employee Statred")
 
  const blockTimestamp5 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
@@ -268,8 +240,8 @@ async function main() {
  console.log("👷 + 2 Employee Statred")
 
  const blockTimestamp7 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
- await ethers.provider.send("evm_mine", [blockTimestamp7 + 200]); // <- 10 sec
- console.log("⌛   Wait 200 sec ...")
+ await ethers.provider.send("evm_mine", [blockTimestamp7 + 20_000]); // 
+ console.log("⌛   Wait 20_000 sec ...")
 
  console.log("---------STREAM INFO ------------")
  console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
@@ -277,8 +249,59 @@ async function main() {
  console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
  console.log("📄Stream [EFT - NOW ] in HOURS: ", ((await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp) / 60 / 60 )
  console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
- console.log("-------------------------")
 
+
+
+ await contract.finishAllStream();
+  console.log(`🏁 All Stream are done`)
+  console.log("🟡Real Balance [Employee #1]: ", (await contractUSDT.balanceOf(acc1.address)).toNumber())
+  console.log("🟡Real Balance [Employee #3]: ", (await contractUSDT.balanceOf(acc3.address)).toNumber())
+  console.log("🟡Real Balance [Employee #4]: ", (await contractUSDT.balanceOf(acc4.address)).toNumber())
+  console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
+  console.log("🟡Real Balance [Employee #6]: ", (await contractUSDT.balanceOf(acc6.address)).toNumber())
+
+  console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(addressCompany)).toNumber())
+
+
+  console.log()
+ console.log("--------- 🧪 TEST CR 🧪 ------------")
+ console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+ console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+ console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+
+
+ await contract.start(acc6.address);
+ console.log("👷 Started", ((await contract.allEmployee(acc6.address)).flowRate).toNumber())
+
+ console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+ console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+ console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+
+ await contract.finish(acc6.address);
+ console.log("👷 Finish")
+
+ console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+ console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+ console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+
+ console.log("---- 🧪 TEST #2   ---")
+
+ await contract.start(acc3.address);
+ console.log("👷 Started", ((await contract.allEmployee(acc3.address)).flowRate).toNumber())
+ await contract.start(acc1.address);
+ console.log("👷#2 Started", ((await contract.allEmployee(acc1.address)).flowRate).toNumber())
+
+ console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+ console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+ console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+
+ await contract.finish(acc3.address);
+ await contract.finish(acc1.address);
+ console.log("👷 Finish All")
+
+ console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+ console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+ console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
 
 
   console.log(`🏁 FINISHED 🏁`);
@@ -351,3 +374,23 @@ main().catch((error) => {
 // console.log("📄📕 INFO [ blocknumber ] ➡️  ",  await ethers.provider.getBlockNumber())
 // console.log("📄📕 INFO [ acc1 = eth ] ➡️  ",  await ethers.provider.getBalance(deployer.address))
 // console.log("📄📕 INFO [ gas price ] ➡️  ",  ethers.utils.formatEther(await ethers.provider.getGasPrice()), "gwei")
+
+
+// ????????? CALCULATE token limit to add new Employee
+// const totalAmountEmployees = (await contract.amountEmployee()).toNumber();
+// const cRrate = (await contract.commonRateAllEmployee()).toNumber();
+// const hoursLimit = (await contract.hoursLimitToAddNewEmployee()).toNumber();
+// const res = (totalAmountEmployees + 1 ) * (cRrate + 10) * hoursLimit;
+//     console.log(`📈 Calculation Math to add new employee:  ${totalAmountEmployees + 1} * ${cRrate + 10} * ${hoursLimit} = ${res} `)
+// // ????????? CALCULATE token limit to Stream All 
+//console.log("---------📈 BUFFER INFO 📈------------")
+// const totalAmountEmployees2 = (await contract.amountEmployee()).toNumber();
+// const cRrate2 = (await contract.commonRateAllEmployee()).toNumber();
+// const hoursLimit2 = (await contract.hoursLimitToAddNewEmployee()).toNumber();
+// const res2 = totalAmountEmployees2 * cRrate2 * hoursLimit2;
+
+// const scBal2 = (await contract.balanceContract()).toNumber();
+// console.log(`📈 Calculation Math to add new employee:  ${totalAmountEmployees2} * ${cRrate2} * ${hoursLimit2} = ${res2} `)
+// console.log("📈Valid TO ADD // Balance: ", scBal2)
+// console.log("📈 Can I add new Employee ", (scBal2 > res2))
+// console.log("📈 Time different", (scBal2 - res2))

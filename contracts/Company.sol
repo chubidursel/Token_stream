@@ -11,7 +11,7 @@ import "./StreamLogic.sol";
 contract Company is StreamLogic {
 
     // ADD EVENTS
-    event AddEmployee(address _who, uint _rate);
+    event AddEmployee(address _who, uint _rate, uint when);
     event StartFlow(address _who, uint _rate);
     event FinishFlow(address _who, uint _earned);
 
@@ -25,8 +25,8 @@ contract Company is StreamLogic {
         address who;
         uint256 flowRate; // 1 token / sec
         bool worker;
-        //bool what kind of sallary he s going to get >>> h/$ or $/mounth
     }
+    
     mapping(address => Employee) public allEmployee;
 
     address[] public allEmployeeList;
@@ -58,8 +58,9 @@ contract Company is StreamLogic {
 
         commonRateAllEmployee += _rate;
 
-        emit AddEmployee(_who, _rate);
+        emit AddEmployee(_who, _rate, block.timestamp);
     }
+
 
     function modifyRate(address _who, uint256 _rate) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned {
         require(!getStream[_who].active, "You can change rate while streaming");
@@ -77,39 +78,34 @@ contract Company is StreamLogic {
 //-------------------- SECURITY / BUFFER --------------
 // Set up all restrictoins tru DAO?
 
-    //Solution #1 (restriction on each stream)
+    // -------- Solution #1 (restriction on each stream)
     uint public tokenLimitMaxHoursPerPerson = 20 hours; // Max amount hours of each stream with enough funds;
 
     function validToStream(address _who)private view returns(bool){
-         return (allEmployee[_who].flowRate * tokenLimitMaxHoursPerPerson ) < currentBalanceContract();
+         return  getTokenLimitToStreamOne(_who) < currentBalanceContract();
+    }
+
+    function getTokenLimitToStreamOne(address _who)public view returns(uint){
+        return allEmployee[_who].flowRate * tokenLimitMaxHoursPerPerson;
     }
 
    
-    // Solution #2 (restriction on all live stream)
-    uint public tokenLimitMaxHoursAllStream = 10 hours;
 
-    function validToStreamAll() private view returns(bool){
-
-        if(amountActiveStreams() == 0) return true;
-
-                // IE     400    =        2         *      20     *     10
-        uint allStreamLimitToken = amountActiveStreams() * CR * tokenLimitMaxHoursAllStream;
-
-        return allStreamLimitToken < currentBalanceContract();
-    }
-
-    // Solution #3 (restriction to add new employee)
+    // --------  Solution #2 (restriction to add new employee)
     uint public hoursLimitToAddNewEmployee = 10 hours;
 
     uint public commonRateAllEmployee;
 
     function validToAddNew(uint _newRate)private view returns(bool){
+        return currentBalanceContract() > getTokenLimitToAddNewEmployee(_newRate);
+        //PS "If company doesnt have enought tokens to pay all employee for next 10 hours they can add new employee"
+     }
 
-            // IE   900    =        2+1             *         20+10     *    10
-        uint tokenLimit = (amountEmployee() + 1) * (commonRateAllEmployee + _newRate) * hoursLimitToAddNewEmployee;
+     function getTokenLimitToAddNewEmployee(uint _newRate)public view returns(uint){
 
-        return tokenLimit < currentBalanceContract();
-        //PS "If company doesnt have enought tokens to pay all employee for next 100 hours they can add new employee"
+     // IE   900   =        2+1         *               20+10              *          10
+
+        return (amountEmployee() + 1) * (commonRateAllEmployee + _newRate) * hoursLimitToAddNewEmployee;
      }
 
      function setHLAddnewEmployee(uint _newLimit) internal activeStream ownerOrAdministrator{
@@ -124,8 +120,7 @@ contract Company is StreamLogic {
     //@dev Starts streaming token to employee
     function start(address _who) public employeeExists(_who) ownerOrAdministrator isLiquidationHappaned{
         require(validToStream(_who), "Balance is very low");
-        require(validToStreamAll(), "Balance is very low for all");
-
+ 
         uint rate =  allEmployee[_who].flowRate;
 
         startStream(_who, rate);
@@ -141,9 +136,13 @@ contract Company is StreamLogic {
         emit FinishFlow(_who, salary);
     }
 
-    // function withdrawEployee()public{
-    //     // FUCS abour streaming within existing stream
+    // function withdrawEmployee()external employeeExists(msg.sender) {
+    //      uint256 salary = _withdrawEmployee(msg.sender);
+
+    //     token.transfer(msg.sender, salary);
     // }
+
+
 
 // Decimals = 6 | 1 USDC = 1_000_000 tokens
     function getDecimals()public view returns(uint){
@@ -154,12 +153,7 @@ contract Company is StreamLogic {
         token.transfer(owner, balanceContract());
     }
 
-    function isContractSet()public view returns(bool){
-        // Check Token
-        // Check Admin?
-        // Check amount?
-        return validToAddNew(10);
-    }
+    // function isContractSet()public view returns(bool){
 
     	// ----- FUNC to DELETE ELEMENT ADDRESS from activeStreamAddress
 	function _indexEmployee(address searchFor) private view returns (uint256) {
