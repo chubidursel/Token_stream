@@ -11,14 +11,14 @@ contract CompanyFactory {
 
     mapping(address=>string) public nameToAddress;
 
-    mapping(address=>bool) public companyCreated; // 1sr company is free
+    //mapping(address=>bool) public companyCreated; // 1sr company is free
 
-    function createCompany(string memory _name) external payable returns(address companyAddr){
+    function createCompany(string memory _name) external returns(address companyAddr){
 
-        if(companyCreated[msg.sender]){
-            require(msg.value >= 0.001 ether, "You already have company, to create another one you have to pay 0.001 eth");
-        }
-        companyCreated[msg.sender] = true;
+        // if(companyCreated[msg.sender]){
+        //     require(msg.value >= 0.001 ether, "You already have company, to create another one you have to pay 0.001 eth");
+        // }
+        // companyCreated[msg.sender] = true;
 
         address newCompanyAddr = address(new Company(_name, msg.sender));
 

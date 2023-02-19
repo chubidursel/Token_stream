@@ -104,12 +104,11 @@ contract StreamLogic is TokenAdmin {
 		
 		_removeAddress(_who);
 
+		emit StreamFinished(_who, retunrTokenAmount, block.timestamp, getStream[_who].startAt);
+
 		getStream[_who].active = false;
 		getStream[_who].startAt = 0;
-
-		//event StreamFinished(address who, uint tokenEarned, uint endsAt, uint startedAt);
-
- 		emit StreamFinished(_who, retunrTokenAmount, block.timestamp, getStream[_who].startAt);
+		
 	
 		return retunrTokenAmount;
 	}
@@ -142,6 +141,8 @@ contract StreamLogic is TokenAdmin {
 
 				token.transfer(loopAddr, currentBalanceEmployee(loopAddr));
 
+//		emit StreamFinished(_who, retunrTokenAmount, block.timestamp, getStream[_who].startAt);
+
 				getStream[loopAddr].active = false;
 				getStream[loopAddr].startAt = 0;
 			}
@@ -153,6 +154,16 @@ contract StreamLogic is TokenAdmin {
 
 		CR = 0;
 		EFT = 0;
+	}
+
+	function _withdrawEmployee(address _who) internal returns(uint){
+		require(getStream[_who].active, "This user doesnt have an active stream");
+
+		uint tokenEarned = currentBalanceEmployee(_who);
+
+		getStream[_who].startAt = block.timestamp;
+
+		return tokenEarned;
 	}
 
 	//------------ CHECK BALANCES----------
@@ -207,6 +218,7 @@ contract StreamLogic is TokenAdmin {
     }
 
 	mapping(address => uint) public debtToEmployee;
+
 	address[] public addrListDebt;
 
 	bool public liqudation;
@@ -312,7 +324,7 @@ contract StreamLogic is TokenAdmin {
 
 	function _removeAddress(address _removeAddr) private {
 
-		uint index = _indexOf(_removeAddr);
+		uint index = _indexOf(_removeAddr); // [1, !2, 3, 4] > index =1
 
         if (index > activeStreamAddress.length) return;
 

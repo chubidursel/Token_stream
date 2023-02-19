@@ -6,23 +6,24 @@ npx hardhat clean && npx hardhat compile
 npx hardhat test  
 
 npx hardhat run --network goerli scripts/deployCompany.ts
+npx hardhat run --network goerli scripts/deployFactory.ts
 
-npx hardhat verify --network goerli 0x942692dEc8F10853b6614c5408Adb7B729Efcb6c "Nike" 0x77797CBde8f8F41d32954B43fC28E6Fd5F999777
-npx hardhat verify --network goerli 0x09658986040e210120c30e38d59A4517716A4E8F
+npx hardhat verify --network goerli 0x6eBC5cB48E3A1AE646fA3d3C6911c393493Bb797 "Nike" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
+npx hardhat verify --network goerli 0x398D7679e07B52E73e2Ec261Ebe92a3536a77457
 
  >>>>>> CONSOLE <<<<<<<<
 
     > npx hardhat console --network goerli    
 
-const c = await ethers.getContractAt("Company", '0x5fb5904119A5D5da4d0f498bbbC367434599Df2F')
-const contractUSDT = await ethers.getContractAt("StableCoin", '0x09658986040e210120c30e38d59A4517716A4E8F') // 0xD049815A3d490CBCF73415A65384652D5F15a367
+const c = await ethers.getContractAt("Company", '0x6eBC5cB48E3A1AE646fA3d3C6911c393493Bb797')                   // TKOEN2 0x09658986040e210120c30e38d59A4517716A4E8F
+const contractUSDT = await ethers.getContractAt("StableCoin", '0xD049815A3d490CBCF73415A65384652D5F15a367') // 0xD049815A3d490CBCF73415A65384652D5F15a367
 
 await contract.setToken("0xD049815A3d490CBCF73415A65384652D5F15a367")
 
 await contract.changeAdmin("0x1AFaF7463894656662E6BdcbDC77522775E6acbB")
 
 ----- GET INFO ----
-(await contract.currentBalanceContract()).toNumber()
+(await c.currentBalanceContract()).toNumber()
 (await contract.currentBalanceEmployee("0x35fe6f7077886Bf5C4890f4D180F09831431A3cF")).toNumber()
 
 (await contract.amountActiveStreams()).toNumber()

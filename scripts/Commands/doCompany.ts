@@ -1,20 +1,21 @@
 import { ethers } from "hardhat";
+
 // npx hardhat run --network goerli scripts/Commands/doCompany.ts
 
 
 async function main() {
   console.log("🏃 Starting")
 
-  const contract = await ethers.getContractAt("Company", '0x942692dEc8F10853b6614c5408Adb7B729Efcb6c')
-  const contractUSDT = await ethers.getContractAt("StableCoin", '0x09658986040e210120c30e38d59A4517716A4E8F')
+  const contract = await ethers.getContractAt("Company", '0x6eBC5cB48E3A1AE646fA3d3C6911c393493Bb797')
+  const contractUSDT = await ethers.getContractAt("StableCoin", '0xD049815A3d490CBCF73415A65384652D5F15a367')
  
   try {
    //------- SET TOKEN---------
-   const tx1 = await contract.setToken(contractUSDT.address)
-   await tx1.wait(1);
-   console.log("✔️ Set token DONE")
+  //  const tx1 = await contract.setToken(contractUSDT.address)
+  //  await tx1.wait(1);
+  //  console.log("✔️ Set token DONE")
 
-   const tx2 = await contractUSDT.mint(contract.address, 1_000_000_000)
+   const tx2 = await contractUSDT.mint(contract.address, ethers.utils.parseEther("1000.0"))
    await tx2.wait(1)
    console.log("✔️ Mint token DONE")
 

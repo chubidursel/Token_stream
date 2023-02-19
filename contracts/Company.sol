@@ -14,6 +14,7 @@ contract Company is StreamLogic {
     event AddEmployee(address _who, uint _rate, uint when);
     event StartFlow(address _who, uint _rate);
     event FinishFlow(address _who, uint _earned);
+    event WithdrawEmpl(address who, uint tokenEarned, uint when);
 
     string public name;
 
@@ -43,7 +44,7 @@ contract Company is StreamLogic {
     // ------------------- MAIN FUNC ----------------
 
     function addEmployee(address _who, uint256 _rate) external ownerOrAdministrator isLiquidationHappaned{
-        require(validToAddNew(_rate), "Balance is very low!");
+        //require(validToAddNew(_rate), "Balance is very low!");
         require(!allEmployee[_who].worker, "You already added!");
 
            Employee memory newEmployee = Employee({
@@ -56,7 +57,7 @@ contract Company is StreamLogic {
 
         allEmployeeList.push(_who);
 
-        commonRateAllEmployee += _rate;
+        //commonRateAllEmployee += _rate;
 
         emit AddEmployee(_who, _rate, block.timestamp);
     }
@@ -70,7 +71,7 @@ contract Company is StreamLogic {
     function deleteEmployee(address _who) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned{
         require(!getStream[_who].active, "You can delete employee while streaming");
 
-        commonRateAllEmployee -= getStream[_who].rate;
+        //commonRateAllEmployee -= getStream[_who].rate;
 
         _removeEmployee(_who);
     }
@@ -79,7 +80,7 @@ contract Company is StreamLogic {
 // Set up all restrictoins tru DAO?
 
     // -------- Solution #1 (restriction on each stream)
-    uint public tokenLimitMaxHoursPerPerson = 20 hours; // Max amount hours of each stream with enough funds;
+    uint public tokenLimitMaxHoursPerPerson = 10 hours; // Max amount hours of each stream with enough funds;
 
     function validToStream(address _who)private view returns(bool){
          return  getTokenLimitToStreamOne(_who) < currentBalanceContract();
@@ -89,29 +90,34 @@ contract Company is StreamLogic {
         return allEmployee[_who].flowRate * tokenLimitMaxHoursPerPerson;
     }
 
+   function setHLAddnewEmployee(uint _newLimit) internal activeStream ownerOrAdministrator{
+    //     // How can set this func? Mini DaO?
+        tokenLimitMaxHoursPerPerson = _newLimit;
+    }
+
    
 
-    // --------  Solution #2 (restriction to add new employee)
-    uint public hoursLimitToAddNewEmployee = 10 hours;
+    // // --------  Solution #2 (restriction to add new employee)
+    // uint public hoursLimitToAddNewEmployee = 10 hours;
 
-    uint public commonRateAllEmployee;
+    // uint public commonRateAllEmployee;
 
-    function validToAddNew(uint _newRate)private view returns(bool){
-        return currentBalanceContract() > getTokenLimitToAddNewEmployee(_newRate);
-        //PS "If company doesnt have enought tokens to pay all employee for next 10 hours they can add new employee"
-     }
+    // function validToAddNew(uint _newRate)private view returns(bool){
+    //     return currentBalanceContract() > getTokenLimitToAddNewEmployee(_newRate);
+    //     //PS "If company doesnt have enought tokens to pay all employee for next 10 hours they can add new employee"
+    //  }
 
-     function getTokenLimitToAddNewEmployee(uint _newRate)public view returns(uint){
+    //  function getTokenLimitToAddNewEmployee(uint _newRate)public view returns(uint){
 
-     // IE   900   =        2+1         *               20+10              *          10
+    //  // IE   900   =        2+1         *               20+10              *          10
 
-        return (amountEmployee() + 1) * (commonRateAllEmployee + _newRate) * hoursLimitToAddNewEmployee;
-     }
+    //     return (amountEmployee() + 1) * (commonRateAllEmployee + _newRate) * hoursLimitToAddNewEmployee;
+    //  }
 
-     function setHLAddnewEmployee(uint _newLimit) internal activeStream ownerOrAdministrator{
-        // How can set this func? Mini DaO?
-        hoursLimitToAddNewEmployee = _newLimit;
-     }
+    //  function setHLAddnewEmployee(uint _newLimit) internal activeStream ownerOrAdministrator{
+    //     // How can set this func? Mini DaO?
+    //     hoursLimitToAddNewEmployee = _newLimit;
+    //  }
 
      
 
@@ -136,11 +142,13 @@ contract Company is StreamLogic {
         emit FinishFlow(_who, salary);
     }
 
-    // function withdrawEmployee()external employeeExists(msg.sender) {
-    //      uint256 salary = _withdrawEmployee(msg.sender);
+    function withdrawEmployee()external employeeExists(msg.sender) {
+         uint256 salary = _withdrawEmployee(msg.sender);
 
-    //     token.transfer(msg.sender, salary);
-    // }
+        token.transfer(msg.sender, salary);
+        
+        emit WithdrawEmpl(msg.sender, salary, block.timestamp);
+    }
 
 
 

@@ -304,6 +304,39 @@ async function main() {
  console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
 
 
+ console.log()
+ console.log("---- 🧪🏧 TEST #1 Withdraw Employee  ---")
+ console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+ console.log("📄 Check var (startAt): ", ((await contract.getStream(acc5.address)).startAt).toNumber())
+ await contract.start(acc5.address);
+ console.log("👷#5 Started", "📄 Check var (startAt): ", ((await contract.getStream(acc5.address)).startAt).toNumber())
+ console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc5.address)).toString())  
+
+ const blockTimestamp12 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+ await ethers.provider.send("evm_mine", [blockTimestamp12 + 200]); // 
+ console.log("⌛   Wait 200 sec ...")
+
+ console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
+ console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc5.address)).toString())  
+
+await contract.connect(acc5).withdrawEmployee();
+console.log("🏧👷#5 Withdraw")
+console.log("📄 Check var (startAt): ", ((await contract.getStream(acc5.address)).startAt).toNumber())
+
+console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
+console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc5.address)).toString())  
+console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+
+const blockTimestamp13 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+await ethers.provider.send("evm_mine", [blockTimestamp13 + 100]); // 
+console.log("⌛   Wait 100 sec ...")
+
+console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc5.address)).toString())
+await contract.finish(acc5.address);
+console.log("👷 Finish")
+console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
+
+
   console.log(`🏁 FINISHED 🏁`);
 }
 

@@ -10,8 +10,8 @@ dotenv.config();
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
   networks: {
-    goerli: {
-      url: `${process.env.ALCHEMY_API}`, //url: `https://goerli.infura.io/v3/${process.env.INFURA_RINKEBY}`,
+    goerli: {                             // `${process.env.ALCHEMY_API}`
+      url: `${process.env.ALCHEMY_API}`, //url: `https://goerli.infura.io/v3/${process.env.INFURA_RINKEBY}`, 
       accounts: [`${process.env.PRIVATE_KEY}`]
     }},
     etherscan: {
