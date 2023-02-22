@@ -2,22 +2,22 @@
 pragma solidity ^0.8.17;
 
 import "./TokenAdmin.sol";
+import "./ArrayLib.sol";
+
+error NoActiveStream();
 
 /// @author Chubiduresel 
-/// @title Stream logic and functions
-contract StreamLogic is TokenAdmin {
+/// @title Stream logic and Liquidation
+abstract contract StreamLogic is TokenAdmin {
+
+	using ArrayLib for address[];
 
     // --------- Events ----------
     event StreamCreated(Stream stream);
-
 	event StreamFinished(address who, uint tokenEarned, uint endsAt, uint startedAt);
-
-	event StreamAllFinished(uint amount, uint endsAt);
-
 	event Liqudation(address _whoCall);
 
 	constructor(address _owner) TokenAdmin(_owner){}
-
 
     /// @notice Parameters of stream object
 	/// @param rate Employee rate (Token / second)
@@ -51,8 +51,8 @@ contract StreamLogic is TokenAdmin {
      * @param _rate The rate of employee (Token / second)
      */
     function startStream(address _recipient, uint256 _rate) internal isLiquidationHappaned{
-		require(!getStream[_recipient].active, "This guy already has stream");
-		require(newStreamCheckETF(_rate), "Contract almost Liquidated. Check Balance!");
+		require(!getStream[_recipient].active, "This dude already has stream");
+		//require(newStreamCheckETF(_rate), "Contract almost Liquidated. Check Balance!");
 		
 		uint32 currentStreamId = getStream[_recipient].streamId + 1;
 
@@ -102,7 +102,7 @@ contract StreamLogic is TokenAdmin {
 
 		calculateETFDecrease(getStream[_who].rate);
 		
-		_removeAddress(_who);
+		activeStreamAddress.removeAddress(_who);
 
 		emit StreamFinished(_who, retunrTokenAmount, block.timestamp, getStream[_who].startAt);
 
@@ -116,48 +116,48 @@ contract StreamLogic is TokenAdmin {
 	/// @notice Finish all active streams
 	/// @dev This function is called from outside
 	/// @dev Reset ETF and CR to Zero and delete all streams from the list
-	function finishAllStream() public {
-		require(amountActiveStreams() != 0, "No active streams!");
+	
+	// function finishAllStream() public {
+	// 	if(amountActiveStreams() == 0) revert NoActiveStream();
 
 	
-		if(block.timestamp > EFT){
-			// IF Liquidation we send as much token as in SC and write down all debt
-			for(uint i = 0; i < activeStreamAddress.length; i++){
-				address loopAddr = activeStreamAddress[i];
-				addrListDebt.push(loopAddr);
-				debtToEmployee[loopAddr] = currentBalanceEmployee(loopAddr) - currentBalanceLiquidation(loopAddr);
+	// 	if(block.timestamp > EFT){
+	// 		// IF Liquidation we send as much token as in SC and write down all debt
+	// 		for(uint i = 0; i < activeStreamAddress.length; i++){
+	// 			address loopAddr = activeStreamAddress[i];
+	// 			addrListDebt.push(loopAddr);
+	// 			debtToEmployee[loopAddr] = currentBalanceEmployee(loopAddr) - currentBalanceLiquidation(loopAddr);
 
-				token.transfer(loopAddr, currentBalanceLiquidation(loopAddr));
+	// 			token.transfer(loopAddr, currentBalanceLiquidation(loopAddr));
 
-				getStream[loopAddr].active = false;
-				getStream[loopAddr].startAt = 0;
-			}
+	// 			getStream[loopAddr].active = false;
+	// 			getStream[loopAddr].startAt = 0;
+	// 		}
 
-			liqudation = true;
+	// 		liqudation = true;
 
-		} else {
-			for(uint i = 0; i < activeStreamAddress.length; i++){
-				address loopAddr = activeStreamAddress[i];
+	// 	} else {
+	// 		for(uint i = 0; i < activeStreamAddress.length; i++){
+	// 			address loopAddr = activeStreamAddress[i];
 
-				token.transfer(loopAddr, currentBalanceEmployee(loopAddr));
+	// 			token.transfer(loopAddr, currentBalanceEmployee(loopAddr));
 
-//		emit StreamFinished(_who, retunrTokenAmount, block.timestamp, getStream[_who].startAt);
+	// 		     emit StreamFinished(loopAddr, currentBalanceEmployee(loopAddr), block.timestamp, getStream[loopAddr].startAt);
 
-				getStream[loopAddr].active = false;
-				getStream[loopAddr].startAt = 0;
-			}
-		}
+	// 			getStream[loopAddr].active = false;
+	// 			getStream[loopAddr].startAt = 0;
+	// 		}
+	// 	}
 
-		emit StreamAllFinished(activeStreamAddress.length, block.timestamp);
+	// 	activeStreamAddress = new address[](0);
 
-		activeStreamAddress = new address[](0);
-
-		CR = 0;
-		EFT = 0;
-	}
+	// 	CR = 0;
+	// 	EFT = 0;
+	// }
 
 	function _withdrawEmployee(address _who) internal returns(uint){
-		require(getStream[_who].active, "This user doesnt have an active stream");
+		//require(getStream[_who].active, "This user doesnt have an active stream");
+		if(getStream[_who].active) revert NoActiveStream();
 
 		uint tokenEarned = currentBalanceEmployee(_who);
 
@@ -201,6 +201,7 @@ contract StreamLogic is TokenAdmin {
 		return  balanceContract() - snapshotAllTransfer;
 	}
 
+  //------------ LIQUIDATION ----------
 	/**
      * @notice Check employee`s debt balance
      * @param _who The employee address
@@ -252,8 +253,6 @@ contract StreamLogic is TokenAdmin {
 		liqudation = false;
 	}
 
-
-
     //-----------SECURITY [EFT implementation] -------------
 
 	uint public EFT; // enough funds till
@@ -290,48 +289,25 @@ contract StreamLogic is TokenAdmin {
 		}
 	}
 	
-
 	// Restrtriction to create new Stream (PosibleEFT < Now)
-	uint16 minDelayToOpen = 5 minutes;
+	// uint16 minDelayToOpen = 5 minutes;
 
-	function newStreamCheckETF(uint _rate)public view returns(bool canOpen){
-		// FORMULA    nETF > ForLoop startAt + now
-		//
-		if(amountActiveStreams() == 0) return true;
+	// function newStreamCheckETF(uint _rate)public view returns(bool canOpen){
+	// 	// FORMULA    nETF > ForLoop startAt + now
+	// 	//
+	// 	if(amountActiveStreams() == 0) return true;
 
-		if((block.timestamp + minDelayToOpen) > _calculatePosibleETF(_rate)){
-				return false;
-		}
+	// 	if((block.timestamp + minDelayToOpen) > _calculatePosibleETF(_rate)){
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
-	function _calculatePosibleETF(uint _rate) private view returns(uint) {
-			uint tempCR = CR + _rate;
-			uint secRecalculate = balanceContract() / tempCR; 
-			return block.timestamp + secRecalculate;
-	}
+	// function _calculatePosibleETF(uint _rate) private view returns(uint) {
+	// 		uint tempCR = CR + _rate;
+	// 		uint secRecalculate = balanceContract() / tempCR; 
+	// 		return block.timestamp + secRecalculate;
+	// }
 
-	// ----- FUNC to DELETE ELEMENT ADDRESS from activeStreamAddress
-	function _indexOf(address searchFor) private view returns (uint256) {
-  		for (uint256 i = 0; i < activeStreamAddress.length; i++) {
-    		if (activeStreamAddress[i] == searchFor) {
-      		return i;
-    		}
-  		}
-  		revert("Not Found");
-	}
-
-	function _removeAddress(address _removeAddr) private {
-
-		uint index = _indexOf(_removeAddr); // [1, !2, 3, 4] > index =1
-
-        if (index > activeStreamAddress.length) return;
-
-        for (uint i = index; i < activeStreamAddress.length -1; i++){
-            activeStreamAddress[i] = activeStreamAddress[i+1];
-        }
-        activeStreamAddress.pop();
-    }
-	
 }

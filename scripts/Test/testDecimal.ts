@@ -10,16 +10,27 @@ async function main() {
   const [deployer, acc1, acc2, acc3, acc4, acc5, acc6, admin] = await ethers.getSigners();
 
 // ----------------CONTRACTS---------------------
-  const Contract = await ethers.getContractFactory("Company");
-  //const contract = await Contract.deploy("RogaAndKopita", deployer.address); // << DEPLOY CONTRACT FROM FACTORY
-
-  const ContractUSDT = await ethers.getContractFactory("StableCoin");
-  const contractUSDT = await ContractUSDT.deploy();
-
-  const ContractFactory = await ethers.getContractFactory("CompanyFactory");
-  const contractFactory = await ContractFactory.deploy();
-
-  await contractUSDT.deployed();
+   // ----------------DEPLOY LIB---------------------
+   const Lib = await ethers.getContractFactory("ArrayLib");
+   const lib = await Lib.deploy();
+ 
+   console.log("LIB IS DONE: ", lib.address)
+ // ----------------CONTRACTS---------------------
+   const Contract = await ethers.getContractFactory("Company", {
+     libraries: {
+       ArrayLib: lib.address
+     }});
+ 
+   const ContractUSDT = await ethers.getContractFactory("StableCoin");
+   const contractUSDT = await ContractUSDT.deploy();
+ 
+   const ContractFactory = await ethers.getContractFactory("CompanyFactory", {
+     libraries: {
+       ArrayLib: lib.address
+     }});
+   const contractFactory = await ContractFactory.deploy();
+ 
+   await contractUSDT.deployed();
   
    // ------------------ TX_COMPANY_SETTING ------------------  
    const txF = await contractFactory.createCompany("Tesla");
@@ -28,7 +39,7 @@ async function main() {
 
    let eventFilter = contractFactory.filters.Creation();
    let events = await contractFactory.queryFilter(eventFilter);
-   const addressCompany = events[0].args[0]
+   const addressCompany = events[0]?.args[0]
    
 // SETTING NEW CONTRACT FROM FACTORY
    const contract = Contract.attach(
@@ -44,12 +55,11 @@ async function main() {
 
   // const tokenToMint = ethers.BigNumber.from("1000000000000000000000") // TO STRING?
   // console.log("!!!!!!!!!!!!!!!!", tokenToMint)
+  // console.log("!!!!!!!!!!!!@@@@@@@", BigInt(100))
 
   const tokensToMint = ethers.utils.parseEther("10000.0")
   const employeeRate = ethers.utils.parseEther("0.1")
-  //  ethers.utils.formatUnits
 
-  console.log("!!!!!!!!!!!!@@@@@@@", BigInt(100))
 
     const tx = await contract.setToken(contractUSDT.address);
     console.log("✅ Token_set|| GasPrice: ", tx.gasPrice?.toString())
@@ -65,8 +75,8 @@ async function main() {
  console.log()
  console.log("💥💥💥💥 STREAMING #1 STARTED 💥💥💥💥 ")
 
- console.log(`📈 [SOL#1] Token Limit to Start 1 STREAM:  ${(await contract.getTokenLimitToStreamOne(acc1.address)).toNumber()}`)
- console.log("📈 [SOL#1] Balance - Limit = ", ((await contract.balanceContract()).toNumber() - (await contract.getTokenLimitToStreamOne(acc1.address)).toNumber()))
+ console.log(`📈 [SOL#1] Token Limit to Start 1 STREAM:  ${ethers.utils.formatEther((await contract.getTokenLimitToStreamOne(acc1.address)))}`)
+ console.log("📈 [SOL#1] Balance - Limit = ", ((Number((await contract.balanceContract()).toString()) - Number((await contract.getTokenLimitToStreamOne(acc1.address)).toString())) /1000000000000000000 )   )
  
    const tx5 = await contract.start(acc1.address);
   console.log("👷 Emplployee #1 Came to Work || GasPrice: ", tx5.gasPrice?.toString())
@@ -77,18 +87,18 @@ async function main() {
  
     console.log("---------STREAM INFO ------------")
     console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
-    console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
-    console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+    console.log("📄Stream [CR = common rate]: ", ethers.utils.formatEther((await contract.CR())))
+    console.log("📄Stream [EFT = Enough funds till]: ", (ethers.utils.formatEther(await contract.EFT())))
     console.log("-------------------------")
 
 
 
   
     console.log("-------BALANCE CHECK-------")
-    console.log("🌊 Employee #1 has: ", (await contract.currentBalanceEmployee(acc1.address)).toString()) 
-    console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
-    console.log("🟡Real Balance [Employee #1]: ", (await contractUSDT.balanceOf(acc1.address)).toString())
-    console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(addressCompany)).toString())
+    console.log("🌊 Employee #1 has: ", (ethers.utils.formatEther(await contract.currentBalanceEmployee(acc1.address)))) 
+    console.log("🌊 SC has: ", (ethers.utils.formatEther(await contract.currentBalanceContract())))
+    console.log("🟡Real Balance [Employee #1]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc1.address))))
+    console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
     console.log("----------------")
 
   // SKIP BLOCKS
@@ -97,16 +107,16 @@ async function main() {
     console.log("Wait 10 sec ...")
 
 
-  console.log("🌊 Employee #1 has: ", (await contract.currentBalanceEmployee(acc1.address)).toString()) 
-  console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
+    console.log("🌊 Employee #1 has: ", (ethers.utils.formatEther(await contract.currentBalanceEmployee(acc1.address)))) 
+    console.log("🌊 SC has: ", (ethers.utils.formatEther(await contract.currentBalanceContract())))
 
     // SKIP BLOCKS
     const blockTimestamp2 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
     await ethers.provider.send("evm_mine", [blockTimestamp2 + 20]); // <- 10 sec
     console.log("Wait 20 sec ...")
 
-    console.log("🌊 Employee #1 has: ", (await contract.currentBalanceEmployee(acc1.address)).toString()) 
-    console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
+    console.log("🌊 Employee #1 has: ", (ethers.utils.formatEther(await contract.currentBalanceEmployee(acc1.address)))) 
+    console.log("🌊 SC has: ", (ethers.utils.formatEther(await contract.currentBalanceContract())))
 
   // const employInfo = await contract.allEmployee(acc1.address)
   // console.log("Employee info from company Contract: ", employInfo)
@@ -118,8 +128,93 @@ async function main() {
   console.log("👷 Emplployee #1 Left || GasPrice: ", tx6.gasPrice?.toString())
   console.log("🏁 STREAMING #1 FINISHED 🏁 ")
 
-  console.log("🟡Real Balance [Employee #1]: ", (await contractUSDT.balanceOf(acc1.address)).toString())
-  console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(addressCompany)).toString())
+  console.log("🟡Real Balance [Employee #1]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc1.address))))
+  console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+
+
+  console.log()
+  console.log("💥💥💥💥 STREAMING #2 REAL HOURS 💥💥💥💥 ")
+  // Employee makes 10$/hour and worked 8 hours == 80$
+  // eaqual to 0.0027 $/h
+  const tokenProsec = 10 / 60 / 60
+  // console.log("💥tokenProsec ", tokenProsec.toFixed(6)) 
+  const employeeRate2 = ethers.utils.parseEther(tokenProsec.toFixed(6))
+
+  const tx11 = await contract.addEmployee(acc2.address, employeeRate2); // calculation of rate grab from Front
+  console.log("✅ Emplployee #2 added || RATE SET IS: ", (ethers.utils.formatEther((await contract.allEmployee(acc2.address)).flowRate)), "🧮 === 10$ /60 /60")
+  console.log("PS:  REAL RATE SET IS: ", (((await contract.allEmployee(acc2.address)).flowRate)).toString())
+
+  console.log(`📈 Token Limit to Start 1 STREAM:  ${ethers.utils.formatEther((await contract.getTokenLimitToStreamOne(acc2.address)))}`)
+
+  console.log("🟡Real Balance [Employee #2]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc2.address))))
+
+
+  await contract.start(acc2.address);
+  console.log("👷 Emplployee #2 Came to Work ")
+
+
+    const blockTimestamp4 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+    await ethers.provider.send("evm_mine", [blockTimestamp4 + 28800]); // <- 10 sec
+    console.log("Wait 8h ...")
+
+  await contract.finish(acc2.address);
+  console.log("👷 Emplployee #2 Left")
+
+  console.log("🟡Real Balance [Employee #2]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc2.address))))
+  console.log("🟡PS:   Real Balance [Employee #2]: ", ((await contractUSDT.balanceOf(acc2.address))).toString())
+  console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+
+
+  console.log()
+  console.log("💥💥💥💥 STREAMING #3 OUTSOURCE 💥💥💥💥 ")
+
+  console.log("🟡PS:   Real Balance [Freelancer #6]: ", ((await contractUSDT.balanceOf(acc6.address))).toString())
+  console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+
+  await contract.createOutsourceJob(acc6.address, "create WEBsite", ethers.utils.parseEther("10"), 100, false);
+  console.log("👷 FREELANCER #6 ")
+
+  const idd = (await contract.id()).sub(1)
+
+  const data1 = await contract.listOutsource(idd);
+  // console.log(data1)
+
+  await ethers.provider.send("evm_mine", [(await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp + 20]); // <- 10 sec
+  console.log("Wait 20 sec ...")
+
+  await contract.connect(acc6).withdrawFreelancer(idd);
+
+  console.log("👷 FREELANCER #6 WITHDRAW ")
+  console.log("🟡Freelancer #6]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc6.address))))
+  console.log("🟡PS:   Real Balance [Freelancer #6]: ", ((await contractUSDT.balanceOf(acc6.address))).toString())
+  console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+
+
+  await contract.connect(acc6).claimFinish(idd, "www.favebook.com");
+  console.log("👷 FREELANCER #6 CLAIMED ")
+
+  await contract.finishOutsource(idd)
+  console.log("👷 FREELANCER #6 FINSIHED ")
+  console.log("🟡Freelancer #6]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc6.address))))
+  console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+
+
+  console.log()
+  console.log("---------------------- 🧪 TEST #1 Balance Virtua/OverRride  -------------------------")
+  console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+  console.log("🟡BALANCE_WITH_LOCKED [Company SC]: ", (ethers.utils.formatEther(await contract.avalibleBalanceContract())))
+
+  await contract.createOutsourceJob(acc6.address, "create WEBsite", ethers.utils.parseEther("100"), 200, false);
+  console.log("👷 FREELANCER #6 ")
+
+  console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+  console.log("🟡BALANCE_WITH_LOCKED [Company SC]: ", (ethers.utils.formatEther(await contract.avalibleBalanceContract())))
+
+
+  console.log()
+  console.log("💥💥💥💥 STREAMING #4 OUTSOURCE & NORMAL 💥💥💥💥 ")
+
+
 
   console.log(`🏁 FINISHED 🏁`);
 }

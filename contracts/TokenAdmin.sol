@@ -1,18 +1,25 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.17;
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
+interface IERC20 {
+    function transfer(address to, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+    function decimals() external view returns (uint8);
+}
 
 contract TokenAdmin {
 
-    ERC20 public token;
+    IERC20 public token;
 
     function setToken(address _token) public {
-        token = ERC20(_token);
+        token = IERC20(_token);
     }
 
     function balanceContract()public view returns(uint){
+        return token.balanceOf(address(this));
+    }
+
+    function avalibleBalanceContract()public virtual view returns(uint){
         return token.balanceOf(address(this));
     }
 

@@ -9,14 +9,24 @@ async function main() {
 
   const [deployer, acc1, acc2, acc3, acc4, acc5, acc6, admin] = await ethers.getSigners();
 
+  // ----------------DEPLOY LIB---------------------
+  const Lib = await ethers.getContractFactory("ArrayLib");
+  const lib = await Lib.deploy();
+
+  console.log("LIB IS DONE: ", lib.address)
 // ----------------CONTRACTS---------------------
-  const Contract = await ethers.getContractFactory("Company");
-  //const contract = await Contract.deploy("RogaAndKopita", deployer.address); // << DEPLOY CONTRACT FROM FACTORY
+  const Contract = await ethers.getContractFactory("Company", {
+    libraries: {
+      ArrayLib: lib.address
+    }});
 
   const ContractUSDT = await ethers.getContractFactory("StableCoin");
   const contractUSDT = await ContractUSDT.deploy();
 
-  const ContractFactory = await ethers.getContractFactory("CompanyFactory");
+  const ContractFactory = await ethers.getContractFactory("CompanyFactory", {
+    libraries: {
+      ArrayLib: lib.address
+    }});
   const contractFactory = await ContractFactory.deploy();
 
   await contractUSDT.deployed();
@@ -53,14 +63,6 @@ async function main() {
 
     const tx4 = await contract.addEmployee(acc2.address, 5);
     console.log("✅ Emplployee #2 added || GasPrice: ", tx4.gasPrice?.toString())
-
- // ------------------  CHECK COMPANY RESTRICTIONS ------------------
- console.log("---------📈 BUFFER INFO 📈------------")
-
-    const scBal = (await contract.balanceContract()).toNumber();
-    console.log(`📈 [SOL#3] Token Limit to add new Employee:  ${(await contract.getTokenLimitToAddNewEmployee(10)).toNumber()}`)
-    console.log("📈 [SOL#3] Balance - Limit = ", (scBal - (await contract.getTokenLimitToAddNewEmployee(10)).toNumber()))
-    
 
  // ------------------ ACCESS CONTROL FUNC ------------------
   const txAC = await contract.changeAdmin(admin.address);
@@ -335,7 +337,6 @@ console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc
 await contract.finish(acc5.address);
 console.log("👷 Finish")
 console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
-
 
   console.log(`🏁 FINISHED 🏁`);
 }

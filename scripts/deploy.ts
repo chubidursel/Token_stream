@@ -1,5 +1,6 @@
 import { ethers } from "hardhat";
 
+
 async function main() {
 
   console.log("🚀 deploying scmart contract.....");
@@ -16,3 +17,5 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+// npx hardhat run --network goerli scripts/deploy.ts

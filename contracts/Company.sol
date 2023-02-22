@@ -1,19 +1,20 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.17;
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./StreamLogic.sol";
+import "./ArrayLib.sol";
+import "./Outsource.sol";
 
- // ---------- PROBLEMS & TASKS--------------
-// Shoud it be tru ProxY? Can we create new contract with proxy?
-// Banc Control
+contract Company is StreamLogic, OutsourceTask {
 
-contract Company is StreamLogic {
+	using ArrayLib for address[];
+
+    function avalibleBalanceContract()public override(TokenAdmin, OutsourceTask) view returns(uint){
+        return token.balanceOf(address(this)) - fundsLocked; // WHY SHOULD I PUT IT HERE????????????
+    }
 
     // ADD EVENTS
     event AddEmployee(address _who, uint _rate, uint when);
-    event StartFlow(address _who, uint _rate);
-    event FinishFlow(address _who, uint _earned);
     event WithdrawEmpl(address who, uint tokenEarned, uint when);
 
     string public name;
@@ -27,7 +28,7 @@ contract Company is StreamLogic {
         uint256 flowRate; // 1 token / sec
         bool worker;
     }
-    
+
     mapping(address => Employee) public allEmployee;
 
     address[] public allEmployeeList;
@@ -41,8 +42,11 @@ contract Company is StreamLogic {
             _;
     }
 
-    // ------------------- MAIN FUNC ----------------
-
+	/**
+     * @notice Create Employee profile
+     * @param _who The employee address
+     * @param _rate The employee`s rate. token pro sec
+     */	
     function addEmployee(address _who, uint256 _rate) external ownerOrAdministrator isLiquidationHappaned{
         //require(validToAddNew(_rate), "Balance is very low!");
         require(!allEmployee[_who].worker, "You already added!");
@@ -64,16 +68,16 @@ contract Company is StreamLogic {
 
 
     function modifyRate(address _who, uint256 _rate) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned {
-        require(!getStream[_who].active, "You can change rate while streaming");
+        if(!getStream[_who].active) revert NoActiveStream();
         allEmployee[_who].flowRate = _rate;
     }
 
     function deleteEmployee(address _who) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned{
-        require(!getStream[_who].active, "You can delete employee while streaming");
+        if(!getStream[_who].active) revert NoActiveStream();
 
         //commonRateAllEmployee -= getStream[_who].rate;
 
-        _removeEmployee(_who);
+        allEmployeeList.removeAddress(_who);
     }
 
 //-------------------- SECURITY / BUFFER --------------
@@ -90,56 +94,26 @@ contract Company is StreamLogic {
         return allEmployee[_who].flowRate * tokenLimitMaxHoursPerPerson;
     }
 
-   function setHLAddnewEmployee(uint _newLimit) internal activeStream ownerOrAdministrator{
+   function setHLStartStream(uint _newLimit) internal activeStream ownerOrAdministrator{
     //     // How can set this func? Mini DaO?
         tokenLimitMaxHoursPerPerson = _newLimit;
     }
 
-   
+    // -------------- FUNCS with EMPLOYEEs ----------------
 
-    // // --------  Solution #2 (restriction to add new employee)
-    // uint public hoursLimitToAddNewEmployee = 10 hours;
-
-    // uint public commonRateAllEmployee;
-
-    // function validToAddNew(uint _newRate)private view returns(bool){
-    //     return currentBalanceContract() > getTokenLimitToAddNewEmployee(_newRate);
-    //     //PS "If company doesnt have enought tokens to pay all employee for next 10 hours they can add new employee"
-    //  }
-
-    //  function getTokenLimitToAddNewEmployee(uint _newRate)public view returns(uint){
-
-    //  // IE   900   =        2+1         *               20+10              *          10
-
-    //     return (amountEmployee() + 1) * (commonRateAllEmployee + _newRate) * hoursLimitToAddNewEmployee;
-    //  }
-
-    //  function setHLAddnewEmployee(uint _newLimit) internal activeStream ownerOrAdministrator{
-    //     // How can set this func? Mini DaO?
-    //     hoursLimitToAddNewEmployee = _newLimit;
-    //  }
-
-     
-
-
-// -------------- FUNCS with EMPLOYEEs ----------------
-    //@dev Starts streaming token to employee
-    function start(address _who) public employeeExists(_who) ownerOrAdministrator isLiquidationHappaned{
+    ///@dev Starts streaming token to employee (check StreamLogic)
+    function start(address _who) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned{
         require(validToStream(_who), "Balance is very low");
- 
-        uint rate =  allEmployee[_who].flowRate;
 
-        startStream(_who, rate);
-        emit StartFlow(_who, rate);
+        startStream(_who, allEmployee[_who].flowRate);
     }
 
-    function finish(address _who) public employeeExists(_who) ownerOrAdministrator {
+    function finish(address _who) external employeeExists(_who) ownerOrAdministrator {
         uint256 salary = finishStream(_who);
         // if(!overWroked){
         //     function ifyouEmployDolboeb()
         // }
         token.transfer(_who, salary);
-        emit FinishFlow(_who, salary);
     }
 
     function withdrawEmployee()external employeeExists(msg.sender) {
@@ -151,8 +125,6 @@ contract Company is StreamLogic {
     }
 
 
-
-// Decimals = 6 | 1 USDC = 1_000_000 tokens
     function getDecimals()public view returns(uint){
         return token.decimals();
     }
@@ -160,34 +132,4 @@ contract Company is StreamLogic {
     function withdrawTokens()external onlyOwner activeStream isLiquidationHappaned{
         token.transfer(owner, balanceContract());
     }
-
-    // function isContractSet()public view returns(bool){
-
-    	// ----- FUNC to DELETE ELEMENT ADDRESS from activeStreamAddress
-	function _indexEmployee(address searchFor) private view returns (uint256) {
-  		for (uint256 i = 0; i < allEmployeeList.length; i++) {
-    		if (allEmployeeList[i] == searchFor) {
-      		return i;
-    		}
-  		}
-  		revert("Not Found");
-	}
-
-	function _removeEmployee(address _removeAddr) private {
-
-		uint index = _indexEmployee(_removeAddr);
-
-        if (index > allEmployeeList.length) return;
-
-        allEmployee[_removeAddr].worker = false; 
-
-        for (uint i = index; i < allEmployeeList.length -1; i++){
-            allEmployeeList[i] = allEmployeeList[i+1];
-        }
-        allEmployeeList.pop();
-    }
-
-    receive() external payable { }
-    fallback() external payable { }
-
 }
