@@ -94,7 +94,7 @@ contract Company is StreamLogic, OutsourceTask {
         return allEmployee[_who].flowRate * tokenLimitMaxHoursPerPerson;
     }
 
-   function setHLStartStream(uint _newLimit) internal activeStream ownerOrAdministrator{
+   function setHLStartStream(uint _newLimit) external activeStream ownerOrAdministrator{
     //     // How can set this func? Mini DaO?
         tokenLimitMaxHoursPerPerson = _newLimit;
     }
@@ -131,5 +131,9 @@ contract Company is StreamLogic, OutsourceTask {
 
     function withdrawTokens()external onlyOwner activeStream isLiquidationHappaned{
         token.transfer(owner, balanceContract());
+    }
+
+    function supportFlowaryInterface()public pure returns(bool){
+        return true;
     }
 }

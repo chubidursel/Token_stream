@@ -6,12 +6,22 @@ npx hardhat clean && npx hardhat compile
 npx hardhat test  
 
 npx hardhat run --network goerli scripts/deployCompany.ts
-npx hardhat run --network goerli scripts/deployFactory.ts
+npx hardhat run --network goerli scripts/deployFactory.ts 
+npx hardhat run --network mumbai scripts/deployFactory.ts  👳
+npx hardhat run --network bsc scripts/deployLib.ts  🧧
 
 npx hardhat verify --network goerli 0x6eBC5cB48E3A1AE646fA3d3C6911c393493Bb797 "Nike" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
-npx hardhat verify --network goerli 0xCc7812De274ADe2c629aE2265BA230BDc75d77d6
+npx hardhat verify --network goerli 0xEAD30D869927e0f370376FD283688bd87284ac4b
+npx hardhat verify --network mumbai 0xEAD30D869927e0f370376FD283688bd87284ac4b  👳
+npx hardhat verify --network bsc 0xA1E854B80cBC58A3960904113C0d43c8B193a24f  🧧
 
- >>>>>> CONSOLE <<<<<<<<
+MUMBAI ARR_LIBRARY 👳 => 0xF21319a05548495D49141Db8653C5B4F622AdB7c
+ETH    ARR_LIBRARY => 0x52746Cd96040469447C887C1C25d257943D9ec9c
+BSC🧧    ARR_LIBRARY => 0xF21319a05548495D49141Db8653C5B4F622AdB7c
+
+
+
+ >>>>>> 👨‍💻 CONSOLE 👨‍💻 <<<<<<<<
 
     > npx hardhat console --network goerli    
 
