@@ -7,7 +7,7 @@ async function main() {
   // ADDR ARR_LIB MUMBAI =>    0xF21319a05548495D49141Db8653C5B4F622AdB7c
   // ETH    ARR_LIBRARY => 0x52746Cd96040469447C887C1C25d257943D9ec9c
   // BSC    ARR_LIBRARY => 0xF21319a05548495D49141Db8653C5B4F622AdB7c
-  const Contract = await ethers.getContractFactory("CompanyFactory", { libraries: { ArrayLib:  "0xF21319a05548495D49141Db8653C5B4F622AdB7c"} });
+  const Contract = await ethers.getContractFactory("CompanyFactory", { libraries: { ArrayLib:  "0x52746Cd96040469447C887C1C25d257943D9ec9c"} });
   const contract = await Contract.deploy();
 
   await contract.deployed();

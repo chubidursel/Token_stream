@@ -6,7 +6,6 @@ import "@openzeppelin/hardhat-upgrades"
 import dotenv from "dotenv";
 dotenv.config();
 
-
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.17",
@@ -35,7 +34,7 @@ const config: HardhatUserConfig = {
       // ETH => process.env.ETHERSCAN_VERIFY
       // POLYGON => process.env.POLYGON_VERIFY
       // BSC => process.env.BSC_VERIFY
-      apiKey: process.env.BSC_VERIFY,  
+      apiKey: process.env.ETHERSCAN_VERIFY,  
     },
 };
 

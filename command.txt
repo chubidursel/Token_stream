@@ -10,8 +10,8 @@ npx hardhat run --network goerli scripts/deployFactory.ts
 npx hardhat run --network mumbai scripts/deployFactory.ts  👳
 npx hardhat run --network bsc scripts/deployLib.ts  🧧
 
-npx hardhat verify --network goerli 0x6eBC5cB48E3A1AE646fA3d3C6911c393493Bb797 "Nike" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
-npx hardhat verify --network goerli 0xEAD30D869927e0f370376FD283688bd87284ac4b
+npx hardhat verify --network goerli 0x8fcaD8949671869b641f733935E02AD97d250593 "DemoV2" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
+npx hardhat verify --network goerli 0x8fcaD8949671869b641f733935E02AD97d250593
 npx hardhat verify --network mumbai 0xEAD30D869927e0f370376FD283688bd87284ac4b  👳
 npx hardhat verify --network bsc 0xA1E854B80cBC58A3960904113C0d43c8B193a24f  🧧
 
@@ -25,22 +25,25 @@ BSC🧧    ARR_LIBRARY => 0xF21319a05548495D49141Db8653C5B4F622AdB7c
 
     > npx hardhat console --network goerli    
 
-const c = await ethers.getContractAt("Company", '0x58533c200ff275F66fbDa28dCb7292468DEfaC5a')                   // TKOEN2 0x09658986040e210120c30e38d59A4517716A4E8F
+const c = await ethers.getContractAt("Company", '0x8fcaD8949671869b641f733935E02AD97d250593')                   // TKOEN2 0x09658986040e210120c30e38d59A4517716A4E8F
 const contractUSDT = await ethers.getContractAt("StableCoin", '0xD049815A3d490CBCF73415A65384652D5F15a367') // 0xD049815A3d490CBCF73415A65384652D5F15a367
 
-await contract.setToken("0xD049815A3d490CBCF73415A65384652D5F15a367")
 
-await contract.changeAdmin("0x1AFaF7463894656662E6BdcbDC77522775E6acbB")
+await c.setToken("0xD049815A3d490CBCF73415A65384652D5F15a367")
+
+await contractUSDT.mint(c.address, ethers.utils.parseEther("1000.0"))
+
+await c.changeAdmin("0x1AFaF7463894656662E6BdcbDC77522775E6acbB")
 
 ----- GET INFO ----
 (await c.currentBalanceContract()).toNumber()
 (await contract.currentBalanceEmployee("0x35fe6f7077886Bf5C4890f4D180F09831431A3cF")).toNumber()
 
-(await contract.amountActiveStreams()).toNumber()
-(await contract.amountEmployee()).toNumber()
+(await c.amountActiveStreams()).toNumber()
+(await c.amountEmployee()).toNumber()
 
 (await contract.EFT()).toNumber()
 (await contract.CR()).toNumber()
 
-(await contractUSDT.balanceOf("0x35fe6f7077886Bf5C4890f4D180F09831431A3cF")).toNumber()
+(await c.balanceOf("0x35fe6f7077886Bf5C4890f4D180F09831431A3cF")).toNumber()
 

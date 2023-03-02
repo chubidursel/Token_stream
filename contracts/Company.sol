@@ -10,7 +10,7 @@ contract Company is StreamLogic, OutsourceTask {
 	using ArrayLib for address[];
 
     function avalibleBalanceContract()public override(TokenAdmin, OutsourceTask) view returns(uint){
-        return token.balanceOf(address(this)) - fundsLocked; // WHY SHOULD I PUT IT HERE????????????
+        return token.balanceOf(address(this)) - fundsLocked; // super
     }
 
     // ADD EVENTS
