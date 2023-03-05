@@ -25,9 +25,10 @@ abstract contract OutsourceTask is TokenAdmin {
     
     mapping(uint=>Outsource) public listOutsource;
 
+    // uint[]public activeOutsource;
+
     function createOutsourceJob(address _who, string calldata _task, uint _wage, uint _deadline, bool _bufferOn) public {
         //REQUIRE bal>salary
-
         Outsource memory newJob = Outsource({
 			task: _task,
             who: _who,

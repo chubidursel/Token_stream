@@ -157,7 +157,7 @@ abstract contract StreamLogic is TokenAdmin {
 
 	function _withdrawEmployee(address _who) internal returns(uint){
 		//require(getStream[_who].active, "This user doesnt have an active stream");
-		if(getStream[_who].active) revert NoActiveStream();
+		if(!getStream[_who].active) revert NoActiveStream();
 
 		uint tokenEarned = currentBalanceEmployee(_who);
 

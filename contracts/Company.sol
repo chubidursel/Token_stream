@@ -68,12 +68,12 @@ contract Company is StreamLogic, OutsourceTask {
 
 
     function modifyRate(address _who, uint256 _rate) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned {
-        if(!getStream[_who].active) revert NoActiveStream();
+        if(getStream[_who].active) revert NoActiveStream();
         allEmployee[_who].flowRate = _rate;
     }
 
     function deleteEmployee(address _who) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned{
-        if(!getStream[_who].active) revert NoActiveStream();
+        if(getStream[_who].active) revert NoActiveStream();
 
         //commonRateAllEmployee -= getStream[_who].rate;
 

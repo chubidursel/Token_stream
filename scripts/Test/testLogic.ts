@@ -196,73 +196,73 @@ async function main() {
   console.log(`🗑️ Employee info: ${(await contract.allEmployee(acc2.address))}`)
 
 
-  console.log()
-  console.log("#####################    PART III  [ 5 streams ] #######################")
+//   console.log()
+//   console.log("#####################    PART III  [ 5 streams ] #######################")
 
-  await contract.addEmployee(acc3.address, 21); 
-  await contract.addEmployee(acc4.address, 10); 
-  await contract.addEmployee(acc5.address, 10);
-  await contract.addEmployee(acc6.address, 12);
+//   await contract.addEmployee(acc3.address, 21); 
+//   await contract.addEmployee(acc4.address, 10); 
+//   await contract.addEmployee(acc5.address, 10);
+//   await contract.addEmployee(acc6.address, 12);
 
-  console.log("✅ Add 4 Employess ")
+//   console.log("✅ Add 4 Employess ")
  
-  console.log("---------📈 BUFFER INFO 📈------------")
+//   console.log("---------📈 BUFFER INFO 📈------------")
 
-  console.log("💥💥💥💥 STREAMING BEGIN 💥💥💥💥 ")
+//   console.log("💥💥💥💥 STREAMING BEGIN 💥💥💥💥 ")
 
- await contract.start(acc1.address);
- await contract.start(acc3.address);
- await contract.start(acc4.address);
+//  await contract.start(acc1.address);
+//  await contract.start(acc3.address);
+//  await contract.start(acc4.address);
 
- console.log("👷 3 Employee Statred")
+//  console.log("👷 3 Employee Statred")
 
- const blockTimestamp5 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
- await ethers.provider.send("evm_mine", [blockTimestamp5 + 20]); // <- 10 sec
- console.log("⌛   Wait 20 sec ...")
+//  const blockTimestamp5 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+//  await ethers.provider.send("evm_mine", [blockTimestamp5 + 20]); // <- 10 sec
+//  console.log("⌛   Wait 20 sec ...")
 
- console.log("---------STREAM INFO ------------")
- console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
- console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
- console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
- console.log("📄Stream [EFT - NOW ]: ", (await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp)
- console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
- console.log("-------------------------")
+//  console.log("---------STREAM INFO ------------")
+//  console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+//  console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+//  console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+//  console.log("📄Stream [EFT - NOW ]: ", (await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp)
+//  console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
+//  console.log("-------------------------")
 
- const blockTimestamp6 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
- await ethers.provider.send("evm_mine", [blockTimestamp6 + 10]); // <- 10 sec
- console.log("⌛   Wait 10 sec ...")
+//  const blockTimestamp6 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+//  await ethers.provider.send("evm_mine", [blockTimestamp6 + 10]); // <- 10 sec
+//  console.log("⌛   Wait 10 sec ...")
 
- console.log("---------STREAM INFO ------------")
- console.log("📄Stream [EFT - NOW ] in HOURS: ", ((await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp) / 60 / 60 )
- console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
- console.log("-------------------------")
+//  console.log("---------STREAM INFO ------------")
+//  console.log("📄Stream [EFT - NOW ] in HOURS: ", ((await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp) / 60 / 60 )
+//  console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
+//  console.log("-------------------------")
   
- await contract.start(acc5.address);
- await contract.start(acc6.address);
- console.log("👷 + 2 Employee Statred")
+//  await contract.start(acc5.address);
+//  await contract.start(acc6.address);
+//  console.log("👷 + 2 Employee Statred")
 
- const blockTimestamp7 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
- await ethers.provider.send("evm_mine", [blockTimestamp7 + 20_000]); // 
- console.log("⌛   Wait 20_000 sec ...")
+//  const blockTimestamp7 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+//  await ethers.provider.send("evm_mine", [blockTimestamp7 + 20_000]); // 
+//  console.log("⌛   Wait 20_000 sec ...")
 
- console.log("---------STREAM INFO ------------")
- console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
- console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
- console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
- console.log("📄Stream [EFT - NOW ] in HOURS: ", ((await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp) / 60 / 60 )
- console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
+//  console.log("---------STREAM INFO ------------")
+//  console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+//  console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
+//  console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
+//  console.log("📄Stream [EFT - NOW ] in HOURS: ", ((await contract.EFT()).toNumber() - (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp) / 60 / 60 )
+//  console.log("🌊 SC has: ", (await contract.currentBalanceContract()).toString())
 
 
 
- await contract.finishAllStream();
-  console.log(`🏁 All Stream are done`)
-  console.log("🟡Real Balance [Employee #1]: ", (await contractUSDT.balanceOf(acc1.address)).toNumber())
-  console.log("🟡Real Balance [Employee #3]: ", (await contractUSDT.balanceOf(acc3.address)).toNumber())
-  console.log("🟡Real Balance [Employee #4]: ", (await contractUSDT.balanceOf(acc4.address)).toNumber())
-  console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
-  console.log("🟡Real Balance [Employee #6]: ", (await contractUSDT.balanceOf(acc6.address)).toNumber())
+//  await contract.finishAllStream();
+//   console.log(`🏁 All Stream are done`)
+//   console.log("🟡Real Balance [Employee #1]: ", (await contractUSDT.balanceOf(acc1.address)).toNumber())
+//   console.log("🟡Real Balance [Employee #3]: ", (await contractUSDT.balanceOf(acc3.address)).toNumber())
+//   console.log("🟡Real Balance [Employee #4]: ", (await contractUSDT.balanceOf(acc4.address)).toNumber())
+//   console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
+//   console.log("🟡Real Balance [Employee #6]: ", (await contractUSDT.balanceOf(acc6.address)).toNumber())
 
-  console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(addressCompany)).toNumber())
+//   console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(addressCompany)).toNumber())
 
 
   console.log()
@@ -271,15 +271,15 @@ async function main() {
  console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
  console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
 
-
- await contract.start(acc6.address);
- console.log("👷 Started", ((await contract.allEmployee(acc6.address)).flowRate).toNumber())
+  
+ await contract.start(acc1.address);
+ console.log("👷 Started", ((await contract.allEmployee(acc1.address)).flowRate).toNumber())
 
  console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
  console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
  console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
 
- await contract.finish(acc6.address);
+ await contract.finish(acc1.address);
  console.log("👷 Finish")
 
  console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
@@ -288,8 +288,8 @@ async function main() {
 
  console.log("---- 🧪 TEST #2   ---")
 
- await contract.start(acc3.address);
- console.log("👷 Started", ((await contract.allEmployee(acc3.address)).flowRate).toNumber())
+ await contract.start(acc2.address);
+ console.log("👷 Started", ((await contract.allEmployee(acc2.address)).flowRate).toNumber())
  await contract.start(acc1.address);
  console.log("👷#2 Started", ((await contract.allEmployee(acc1.address)).flowRate).toNumber())
 
@@ -297,7 +297,7 @@ async function main() {
  console.log("📄Stream [CR = common rate]: ", (await contract.CR()).toString())
  console.log("📄Stream [EFT = Enough funds till]: ", (await contract.EFT()).toString())
 
- await contract.finish(acc3.address);
+ await contract.finish(acc2.address);
  await contract.finish(acc1.address);
  console.log("👷 Finish All")
 
@@ -309,34 +309,36 @@ async function main() {
  console.log()
  console.log("---- 🧪🏧 TEST #1 Withdraw Employee  ---")
  console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
- console.log("📄 Check var (startAt): ", ((await contract.getStream(acc5.address)).startAt).toNumber())
- await contract.start(acc5.address);
- console.log("👷#5 Started", "📄 Check var (startAt): ", ((await contract.getStream(acc5.address)).startAt).toNumber())
- console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc5.address)).toString())  
+ console.log("📄 Check var (startAt): ", ((await contract.getStream(acc2.address)).startAt).toNumber())
+ await contract.start(acc2.address);
+ console.log("👷#5 Started", "📄 Check var (startAt): ", ((await contract.getStream(acc2.address)).startAt).toNumber())
+ console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc2.address)).toString())  
 
  const blockTimestamp12 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
  await ethers.provider.send("evm_mine", [blockTimestamp12 + 200]); // 
  console.log("⌛   Wait 200 sec ...")
 
- console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
- console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc5.address)).toString())  
+ console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc2.address)).toNumber())
+ console.log("🌊 Employee #2 has: ", (await contract.currentBalanceEmployee(acc2.address)).toString())  
 
-await contract.connect(acc5).withdrawEmployee();
-console.log("🏧👷#5 Withdraw")
-console.log("📄 Check var (startAt): ", ((await contract.getStream(acc5.address)).startAt).toNumber())
+console.log("!!!!!!!!!!!!!!", (await contract.getStream(acc2.address)).active)
 
-console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
-console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc5.address)).toString())  
+await contract.connect(acc2).withdrawEmployee();
+console.log("🏧👷#2 Withdraw")
+console.log("📄 Check var (startAt): ", ((await contract.getStream(acc2.address)).startAt).toNumber())
+
+console.log("🟡Real Balance [Employee #2]: ", (await contractUSDT.balanceOf(acc2.address)).toNumber())
+console.log("🌊 Employee #2 has: ", (await contract.currentBalanceEmployee(acc2.address)).toString())  
 console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
 
 const blockTimestamp13 = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
 await ethers.provider.send("evm_mine", [blockTimestamp13 + 100]); // 
 console.log("⌛   Wait 100 sec ...")
 
-console.log("🌊 Employee #5 has: ", (await contract.currentBalanceEmployee(acc5.address)).toString())
-await contract.finish(acc5.address);
+console.log("🌊 Employee #2 has: ", (await contract.currentBalanceEmployee(acc2.address)).toString())
+await contract.finish(acc2.address);
 console.log("👷 Finish")
-console.log("🟡Real Balance [Employee #5]: ", (await contractUSDT.balanceOf(acc5.address)).toNumber())
+console.log("🟡Real Balance [Employee #2]: ", (await contractUSDT.balanceOf(acc2.address)).toNumber())
 
   console.log(`🏁 FINISHED 🏁`);
 }
