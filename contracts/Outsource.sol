@@ -5,6 +5,7 @@ import "./TokenAdmin.sol";
 
 error UnAuthorized();
 error PassedDeadLine();
+error NotEnoughFunds();
 
 abstract contract OutsourceTask is TokenAdmin {
 
@@ -15,20 +16,21 @@ abstract contract OutsourceTask is TokenAdmin {
         uint256 deadline;
         uint256 wage; //10
         uint256 amountWithdraw; //-= 4.9
-        bool bufferOn;
+        uint8 bufferPercentage;
         Status status;
     }
 
     enum Status {None, Active, ClaimDone, Finished}
 
-    uint public id;
+    uint public OutsourceID;
     
     mapping(uint=>Outsource) public listOutsource;
 
     // uint[]public activeOutsource;
 
-    function createOutsourceJob(address _who, string calldata _task, uint _wage, uint _deadline, bool _bufferOn) public {
-        //REQUIRE bal>salary
+    function createOutsourceJob(address _who, string calldata _task, uint _wage, uint _deadline, uint8 _bufferOn) public {
+         if(currentBalanceContract() < _wage) revert NotEnoughFunds();
+        	
         Outsource memory newJob = Outsource({
 			task: _task,
             who: _who,
@@ -36,13 +38,13 @@ abstract contract OutsourceTask is TokenAdmin {
             deadline: block.timestamp + _deadline,
             wage: _wage,
             amountWithdraw: 0,
-            bufferOn: _bufferOn,
+            bufferPercentage: _bufferOn,
             status: Status.Active
 		});
 
-        listOutsource[id] = newJob;
+        listOutsource[OutsourceID] = newJob;
 
-        id++;
+        OutsourceID++;
 
         fundsLocked += _wage;
     }
@@ -52,13 +54,19 @@ abstract contract OutsourceTask is TokenAdmin {
         if(listOutsource[_id].who != msg.sender) revert UnAuthorized();
 
         uint amountEarned;
+        uint curBalance = currentBal(_id);
+        uint withdraw = listOutsource[_id].amountWithdraw;
 
-        if(listOutsource[_id].bufferOn){
+        if(calculateBuffer(curBalance, listOutsource[_id].bufferPercentage) < withdraw){
+            return;
+        }
 
-            amountEarned = calculateBuffer(currentBal(_id)) - listOutsource[_id].amountWithdraw; 
+        if(listOutsource[_id].bufferPercentage > 0){
+
+            amountEarned = calculateBuffer(curBalance, listOutsource[_id].bufferPercentage) - withdraw; 
         
         } else {
-            amountEarned = currentBal(_id);
+            amountEarned = curBalance - withdraw;
         }
 
         token.transfer(listOutsource[_id].who, amountEarned); //7$ => 4,9$ // 1$ 
@@ -69,29 +77,7 @@ abstract contract OutsourceTask is TokenAdmin {
     }
 
 
-    //------------------------  BUFFER --------------------
 
-    uint8 public percentageBuffer = 30; 
-                                    //70
-
-    function setpercentBuffer(uint8 _newBuffer) internal {
-        require(_newBuffer < 70, "You cant set beffer more then 70%");
-        percentageBuffer = _newBuffer;
-    }
-
-    function calculateBuffer(uint amount) private view returns(uint){
-
-         return amount - ((amount *  percentageBuffer) / 100);
-                        //  7    -    (7    *    30) / 100
-
-
-        // - 30%  >>> 3$ BUFFER
-       // 10$ for 1h => in 45min he`s got 7$ - 21%  => return 7 * 0.21 = 1.47
-
-       // 7 / 10 = 0.7(EARNED$) * 0.7(70%FIXED) = 0.49 |||   0.49 * 10$ = 4.9$
-
-       // 3 / 10 = 0.3 * 0.7 = 0.21  |||  0.21 * 10$ = 2.1$ 
-    }
 
     //FUNC to set it
     // Func to calculate withdraw for Freelancer
@@ -148,8 +134,22 @@ abstract contract OutsourceTask is TokenAdmin {
         return (block.timestamp - listOutsource[_id].startAt) * rate;
     }
 
+        //------------------------  BUFFER --------------------
+
+
+    function calculateBuffer(uint amount, uint8 percentageBuffer) private pure returns(uint){
+
+         return amount - ((amount *  percentageBuffer) / 100);
+                        //  7    -    (7    *    30) / 100
+
+        // - 30%  >>> 3$ BUFFER
+       // 10$ for 1h => in 45min he`s got 7$ - 21%  => return 7 * 0.21 = 1.47
+
+       // 7 / 10 = 0.7(EARNED$) * 0.7(70%FIXED) = 0.49 |||   0.49 * 10$ = 4.9$
+
+       // 3 / 10 = 0.3 * 0.7 = 0.21  |||  0.21 * 10$ = 2.1$ 
+    }
+    
         //------------------------  CANCEL --------------------
-        
-        // FUNC for Boss >> we keep Buffer
     
 }

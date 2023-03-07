@@ -5,7 +5,7 @@ pragma solidity ^0.8.17;
 /// @title Library to find an address in array and delete
 library ArrayLib{
     
-    function removeAddress(address[]storage _arr, address _removeAddr) public {
+    function removeAddress(address[]storage _arr, address _removeAddr) internal {
 
 		uint indexAddr = _indexOf(_arr, _removeAddr);
 
@@ -15,7 +15,7 @@ library ArrayLib{
         _arr.pop();
     }
  
-	function _indexOf(address[]storage _arr, address searchFor) private view returns (uint256) {
+	function _indexOf(address[]storage _arr, address searchFor) internal view returns (uint256) {
   		for (uint256 i = 0; i < _arr.length; i++) {
     		if (_arr[i] == searchFor) {
       		return i;

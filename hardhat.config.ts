@@ -9,12 +9,12 @@ dotenv.config();
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.17",
-    // settings: {
-    //   optimizer: {
-    //     enabled: true,
-    //     runs: 200
-    //   }
-    // }
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      },
+    }
   },
   networks: {
     goerli: {                             // `${process.env.ALCHEMY_API}`
@@ -36,6 +36,7 @@ const config: HardhatUserConfig = {
       // BSC => process.env.BSC_VERIFY
       apiKey: process.env.ETHERSCAN_VERIFY,  
     },
+
 };
 
 export default config;
