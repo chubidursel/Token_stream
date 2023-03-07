@@ -99,7 +99,7 @@ abstract contract OutsourceTask is TokenAdmin {
         emit ClaimDone(msg.sender, linkToResult);
     }
 
-    function finishOutsource(uint _id) public {
+    function finishOutsource(uint _id) public ownerOrAdministrator{
         //CHECk: 1.Claimed?
         //       2. DeadLine
 

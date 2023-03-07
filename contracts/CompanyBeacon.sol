@@ -16,7 +16,7 @@ contract CompanyBeacon is Ownable{
         transferOwnership(tx.origin); //?????
     }
 
-    function update(address _newImpl) public {
+    function upgrageTo(address _newImpl) public {
         beacon.upgradeTo(_newImpl);
         implementation = _newImpl;
     }

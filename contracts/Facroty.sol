@@ -15,7 +15,7 @@ contract CompanyFactory {
     mapping(address=>string) public nameToAddress;
 
 
-    CompanyBeacon immutable beacon;
+    CompanyBeacon immutable public beacon;
 
     constructor(address _initImpl){
         beacon = new CompanyBeacon(_initImpl);
@@ -32,7 +32,8 @@ contract CompanyFactory {
 
         BeaconProxy newCompany = new BeaconProxy(
             address(beacon), 
-            abi.encodeWithSelector(Company.initialize.selector, _name, msg.sender)
+            //abi.encodeWithSelector(0x8b39ef54, _name, msg.sender);
+            abi.encodeWithSelector(Company.initialize.selector, _name, 0x98162D17D4d15c945B7418475EdEb4d9c0335684)                                                               
         );
 
         //address newCompanyAddr = address(new Company(_name, msg.sender)); // OLD VERSION

@@ -18,6 +18,10 @@ contract Company is StreamLogic, OutsourceTask, Initializable{
         return super.currentBalanceContract();
     }
 
+    function getSelector() external pure returns (bytes4) {
+        return bytes4(keccak256(bytes("initialize(string, address)")));
+    }
+
     // ADD EVENTS
     event AddEmployee(address _who, uint _rate, uint when);
     event WithdrawEmpl(address who, uint tokenEarned, uint when);

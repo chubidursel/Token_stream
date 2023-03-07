@@ -5,7 +5,7 @@ async function main() {
 
   const [deployer] = await ethers.getSigners();
 
-  const Contract = await ethers.getContractFactory("Company", { libraries: { ArrayLib:  "0x52746Cd96040469447C887C1C25d257943D9ec9c"} });
+  const Contract = await ethers.getContractFactory("Company");
   const contract = await Contract.deploy();
 
   await contract.deployed();

@@ -57,6 +57,336 @@
           }
         }
       }
+    },
+    "06476aef87de2f62e2426790dce6a98832d4e378dbfabef40f4a6958177ab426": {
+      "address": "0x049f6829252412c1E1Ed14EaA51C7E2563a1C924",
+      "txHash": "0x8850e58c9064e3c13d6a606d0b2158c46f652d530774b1d985cb34b27755125d",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "token",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IERC20)3167",
+            "contract": "TokenAdmin",
+            "src": "contracts\\TokenAdmin.sol:12"
+          },
+          {
+            "label": "owner",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address",
+            "contract": "TokenAdmin",
+            "src": "contracts\\TokenAdmin.sol:27"
+          },
+          {
+            "label": "administrator",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "TokenAdmin",
+            "src": "contracts\\TokenAdmin.sol:29"
+          },
+          {
+            "label": "getStream",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_struct(Stream)2570_storage)",
+            "contract": "StreamLogic",
+            "src": "contracts\\StreamLogic.sol:32"
+          },
+          {
+            "label": "activeStreamAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "StreamLogic",
+            "src": "contracts\\StreamLogic.sol:34"
+          },
+          {
+            "label": "debtToEmployee",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "StreamLogic",
+            "src": "contracts\\StreamLogic.sol:219"
+          },
+          {
+            "label": "addrListDebt",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "StreamLogic",
+            "src": "contracts\\StreamLogic.sol:221"
+          },
+          {
+            "label": "liqudation",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_bool",
+            "contract": "StreamLogic",
+            "src": "contracts\\StreamLogic.sol:223"
+          },
+          {
+            "label": "EFT",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_uint256",
+            "contract": "StreamLogic",
+            "src": "contracts\\StreamLogic.sol:256"
+          },
+          {
+            "label": "CR",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_uint256",
+            "contract": "StreamLogic",
+            "src": "contracts\\StreamLogic.sol:257"
+          },
+          {
+            "label": "OutsourceID",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_uint256",
+            "contract": "OutsourceTask",
+            "src": "contracts\\Outsource.sol:25"
+          },
+          {
+            "label": "listOutsource",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_mapping(t_uint256,t_struct(Outsource)2177_storage)",
+            "contract": "OutsourceTask",
+            "src": "contracts\\Outsource.sol:27"
+          },
+          {
+            "label": "fundsLocked",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_uint256",
+            "contract": "OutsourceTask",
+            "src": "contracts\\Outsource.sol:122"
+          },
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "13",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
+          },
+          {
+            "label": "name",
+            "offset": 0,
+            "slot": "14",
+            "type": "t_string_storage",
+            "contract": "Company",
+            "src": "contracts\\Company.sol:25"
+          },
+          {
+            "label": "allEmployee",
+            "offset": 0,
+            "slot": "15",
+            "type": "t_mapping(t_address,t_struct(Employee)1684_storage)",
+            "contract": "Company",
+            "src": "contracts\\Company.sol:43"
+          },
+          {
+            "label": "allEmployeeList",
+            "offset": 0,
+            "slot": "16",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "Company",
+            "src": "contracts\\Company.sol:45"
+          },
+          {
+            "label": "tokenLimitMaxHoursPerPerson",
+            "offset": 0,
+            "slot": "17",
+            "type": "t_uint256",
+            "contract": "Company",
+            "src": "contracts\\Company.sol:98"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IERC20)3167": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Status)2182": {
+            "label": "enum OutsourceTask.Status",
+            "members": [
+              "None",
+              "Active",
+              "ClaimDone",
+              "Finished"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(Employee)1684_storage)": {
+            "label": "mapping(address => struct Company.Employee)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Stream)2570_storage)": {
+            "label": "mapping(address => struct StreamLogic.Stream)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Outsource)2177_storage)": {
+            "label": "mapping(uint256 => struct OutsourceTask.Outsource)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Employee)1684_storage": {
+            "label": "struct Company.Employee",
+            "members": [
+              {
+                "label": "who",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "flowRate",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "worker",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(Outsource)2177_storage": {
+            "label": "struct OutsourceTask.Outsource",
+            "members": [
+              {
+                "label": "task",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "who",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "startAt",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "deadline",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "wage",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "amountWithdraw",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "bufferPercentage",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(Status)2182",
+                "offset": 1,
+                "slot": "6"
+              }
+            ],
+            "numberOfBytes": "224"
+          },
+          "t_struct(Stream)2570_storage": {
+            "label": "struct StreamLogic.Stream",
+            "members": [
+              {
+                "label": "rate",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "startAt",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "streamId",
+                "type": "t_uint32",
+                "offset": 1,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
     }
   }
 }

@@ -11,7 +11,7 @@ npx hardhat run --network mumbai scripts/deployFactory.ts  👳
 npx hardhat run --network bsc scripts/deployLib.ts  🧧
 
 npx hardhat verify --network goerli 0x77BF84946F07c041B5bA077fa7F99a89b8C3f41d "XXX" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
-npx hardhat verify --network goerli 0x77BF84946F07c041B5bA077fa7F99a89b8C3f41d
+npx hardhat verify --network goerli 0x28a7aF828d93B29BB210D7A02703A53E7C39331f
 npx hardhat verify --network mumbai 0xEAD30D869927e0f370376FD283688bd87284ac4b  👳
 npx hardhat verify --network bsc 0xA1E854B80cBC58A3960904113C0d43c8B193a24f  🧧
 
@@ -47,3 +47,27 @@ await c.changeAdmin("0x1AFaF7463894656662E6BdcbDC77522775E6acbB")
 
 (await c.balanceOf("0x35fe6f7077886Bf5C4890f4D180F09831431A3cF")).toNumber()
 
+
+// ------------ ADDRESSES-------------------------
+
+GOERLI 
+
+    Company V2 => 0x77BF84946F07c041B5bA077fa7F99a89b8C3f41d
+    ARR_LIB => 0x52746Cd96040469447C887C1C25d257943D9ec9c
+
+    PROXY CONTRACTS
+        BEACON => 0x87700E5fDe6e376993C168dC3120E173bcB16d49
+        Factory => 0xb7a0D32cA9712E4B6942F5bA38A8d32D0CE5A56C
+        COMPANY_IMPL => 0x28a7aF828d93B29BB210D7A02703A53E7C39331f
+        
+
+
+
+
+
+
+
+
+
+
+        

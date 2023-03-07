@@ -20,14 +20,21 @@ async function main() {
 
  const beacon = await upgrades.deployBeacon(company);
  await beacon.deployed();
+
  console.log("beacon deployed", beacon.address);
 
  const Factory = await ethers.getContractFactory("CompanyFactory");
+
  const factory = await Factory.deploy(beacon.address);
+
  await factory.deployed();
+
  console.log("factory deployed", factory.address);
 
 console.log("!!!!!!!", await factory.totalAmounOfComapnies())
+
+
+
 
 await factory.createCompany("SYKAAAA")
 
