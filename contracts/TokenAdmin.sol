@@ -7,7 +7,7 @@ interface IERC20 {
     function decimals() external view returns (uint8);
 }
 
-abstract contract TokenAdmin {
+contract TokenAdmin {
 
     IERC20 public token;
 
@@ -19,14 +19,18 @@ abstract contract TokenAdmin {
         return token.balanceOf(address(this));
     }
 
-    function avalibleBalanceContract()public virtual view returns(uint){ }
-
-    function currentBalanceContract()public virtual view returns(uint){ }
+    function avalibleBalanceContract()public virtual view returns(uint){
+        return token.balanceOf(address(this));
+    }
 
 // -------------- Access roles ---------------
     address public owner;
 
     address public administrator;
+
+    constructor(address _owner){
+        owner = _owner;
+    }
 
     modifier onlyOwner(){
         require(owner == msg.sender, "You are not an owner!");
@@ -37,6 +41,7 @@ abstract contract TokenAdmin {
         require(owner == msg.sender || administrator == msg.sender, "You are not an owner!");
         _;
     }
+
 
     function sendOwnership(address _newOwner) external onlyOwner{
         owner = _newOwner;

@@ -17,6 +17,8 @@ abstract contract StreamLogic is TokenAdmin {
 	event StreamFinished(address who, uint tokenEarned, uint endsAt, uint startedAt);
 	event Liqudation(address _whoCall);
 
+	constructor(address _owner) TokenAdmin(_owner){}
+
     /// @notice Parameters of stream object
 	/// @param rate Employee rate (Token / second)
 	/// @param startAt Block.timestamp when employee start streaming
@@ -180,10 +182,10 @@ abstract contract StreamLogic is TokenAdmin {
 	/// @notice Check company`s balance
 	/// @dev If it returns 1, it means that contract doesnt have enough funds to pay for all streams (Liquidation)
     /// @return amount of token thet company posses at the moment this function is called
-	function currentBalanceContract()public view virtual override returns(uint256){
-	
+	function currentBalanceContract()public view returns(uint256){
+		
 		if(amountActiveStreams() == 0){
-			return avalibleBalanceContract();
+			return balanceContract();
 		}
 		uint snapshotAllTransfer;
 
@@ -192,11 +194,11 @@ abstract contract StreamLogic is TokenAdmin {
 		}
 
 		// If liquidation
-		if((avalibleBalanceContract() < snapshotAllTransfer)){
+		if((balanceContract() < snapshotAllTransfer)){
 			return 1;
 		}
 
-		return  avalibleBalanceContract() - snapshotAllTransfer;
+		return  balanceContract() - snapshotAllTransfer;
 	}
 
   //------------ LIQUIDATION ----------

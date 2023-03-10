@@ -21,7 +21,7 @@ async function main() {
  const beacon = await upgrades.deployBeacon(company);
  await beacon.deployed();
 
- console.log("beacon deployed", beacon.address);
+ console.log("beacon deployed: ", beacon.address);
 
  const Factory = await ethers.getContractFactory("CompanyFactory");
 
