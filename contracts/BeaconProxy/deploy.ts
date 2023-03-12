@@ -1,9 +1,7 @@
 import { ethers, upgrades } from "hardhat";
 
-
-
 async function main() {
-  console.log("Starting Deploying....")
+  console.log("Start Deploying....")
   
   const Contract = await ethers.getContractFactory("Ship");
 

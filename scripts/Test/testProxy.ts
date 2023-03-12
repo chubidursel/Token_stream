@@ -6,22 +6,23 @@ import { ethers, upgrades } from "hardhat";
 async function main() {
   console.log("Starting 🏃")
 
-  const [deployer, acc1, acc2, acc3, acc4, acc5, acc6, admin] = await ethers.getSigners();
-
    // ------------ #1 DEPLOY LIB--------------------
    const Lib = await ethers.getContractFactory("ArrayLib");
    const lib = await Lib.deploy();
 
    console.log("LIBRARY IS DONE: ", lib.address)
 
- // ------------ MAIN --------------------
+ // ------------ #2 Deploy Beacon --------------------
 
  const company = await ethers.getContractFactory("Company");
 
  const beacon = await upgrades.deployBeacon(company);
+
  await beacon.deployed();
 
- console.log("beacon deployed: ", beacon.address);
+ console.log("Beacon deployed: ", beacon.address);
+
+ // ------------ #3 Deploy Facotry --------------------
 
  const Factory = await ethers.getContractFactory("CompanyFactory");
 
@@ -31,12 +32,11 @@ async function main() {
 
  console.log("factory deployed", factory.address);
 
-console.log("!!!!!!!", await factory.totalAmounOfComapnies())
+console.log("Test amount of companies: ", await factory.totalAmounOfComapnies())
 
+ // ------------ #4 CREATE NEW INSTANCE --------------------
 
-
-
-await factory.createCompany("SYKAAAA")
+await factory.createCompany("Tesla") // ERR > 'Address: low-level delegate call failed'
 
   console.log(`🏁 FINISHED 🏁`);
 }

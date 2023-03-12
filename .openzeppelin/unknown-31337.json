@@ -8,9 +8,69 @@
     }
   ],
   "impls": {
-    "a904c5d3ab68eaec0ab1f625707f3202ef80d06abb875532a5d56a4c79c7f6d4": {
+    "e98aa1886f6cb1487a84d7bc94a0e41705cb6b60496035f4e9c81c79d2bacc5a": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "txHash": "0x96c2918ee9718cd0ba0284e7b4f6b59a699789257e2ee321bd45fc42ca78a9e6",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
+          },
+          {
+            "label": "name",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage",
+            "contract": "Ship",
+            "src": "contracts\\BeaconProxy\\Ship.sol:7"
+          },
+          {
+            "label": "fuel",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "Ship",
+            "src": "contracts\\BeaconProxy\\Ship.sol:8"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "b82731658ca1e7bdd2127709f86ba0dfcbd1bc55773a1b204222ece01cf869f5": {
       "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      "txHash": "0xb54d063c31ec66f49690809d641377337925bd38db9f44b808dda5f57e66a82c",
+      "txHash": "0xd1d8b6b758bbfb651c243179c20fdcaebedb696f078b8d75b6b4fc81854b6071",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -18,7 +78,7 @@
             "label": "token",
             "offset": 0,
             "slot": "0",
-            "type": "t_contract(IERC20)3182",
+            "type": "t_contract(IERC20)10937",
             "contract": "TokenAdmin",
             "src": "contracts\\TokenAdmin.sol:12"
           },
@@ -42,7 +102,7 @@
             "label": "getStream",
             "offset": 0,
             "slot": "3",
-            "type": "t_mapping(t_address,t_struct(Stream)2585_storage)",
+            "type": "t_mapping(t_address,t_struct(Stream)9897_storage)",
             "contract": "StreamLogic",
             "src": "contracts\\StreamLogic.sol:32"
           },
@@ -106,7 +166,7 @@
             "label": "listOutsource",
             "offset": 0,
             "slot": "11",
-            "type": "t_mapping(t_uint256,t_struct(Outsource)2192_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Outsource)9502_storage)",
             "contract": "OutsourceTask",
             "src": "contracts\\Outsource.sol:27"
           },
@@ -147,7 +207,7 @@
             "label": "allEmployee",
             "offset": 0,
             "slot": "15",
-            "type": "t_mapping(t_address,t_struct(Employee)1700_storage)",
+            "type": "t_mapping(t_address,t_struct(Employee)8992_storage)",
             "contract": "Company",
             "src": "contracts\\Company.sol:47"
           },
@@ -181,11 +241,11 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(IERC20)3182": {
+          "t_contract(IERC20)10937": {
             "label": "contract IERC20",
             "numberOfBytes": "20"
           },
-          "t_enum(Status)2197": {
+          "t_enum(Status)9507": {
             "label": "enum OutsourceTask.Status",
             "members": [
               "None",
@@ -195,11 +255,11 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_mapping(t_address,t_struct(Employee)1700_storage)": {
+          "t_mapping(t_address,t_struct(Employee)8992_storage)": {
             "label": "mapping(address => struct Company.Employee)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_address,t_struct(Stream)2585_storage)": {
+          "t_mapping(t_address,t_struct(Stream)9897_storage)": {
             "label": "mapping(address => struct StreamLogic.Stream)",
             "numberOfBytes": "32"
           },
@@ -207,7 +267,7 @@
             "label": "mapping(address => uint256)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(Outsource)2192_storage)": {
+          "t_mapping(t_uint256,t_struct(Outsource)9502_storage)": {
             "label": "mapping(uint256 => struct OutsourceTask.Outsource)",
             "numberOfBytes": "32"
           },
@@ -215,7 +275,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(Employee)1700_storage": {
+          "t_struct(Employee)8992_storage": {
             "label": "struct Company.Employee",
             "members": [
               {
@@ -239,7 +299,7 @@
             ],
             "numberOfBytes": "96"
           },
-          "t_struct(Outsource)2192_storage": {
+          "t_struct(Outsource)9502_storage": {
             "label": "struct OutsourceTask.Outsource",
             "members": [
               {
@@ -286,14 +346,14 @@
               },
               {
                 "label": "status",
-                "type": "t_enum(Status)2197",
+                "type": "t_enum(Status)9507",
                 "offset": 1,
                 "slot": "6"
               }
             ],
             "numberOfBytes": "224"
           },
-          "t_struct(Stream)2585_storage": {
+          "t_struct(Stream)9897_storage": {
             "label": "struct StreamLogic.Stream",
             "members": [
               {
@@ -330,66 +390,6 @@
           "t_uint32": {
             "label": "uint32",
             "numberOfBytes": "4"
-          },
-          "t_uint8": {
-            "label": "uint8",
-            "numberOfBytes": "1"
-          }
-        }
-      }
-    },
-    "e98aa1886f6cb1487a84d7bc94a0e41705cb6b60496035f4e9c81c79d2bacc5a": {
-      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0x96c2918ee9718cd0ba0284e7b4f6b59a699789257e2ee321bd45fc42ca78a9e6",
-      "layout": {
-        "solcVersion": "0.8.17",
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_uint8",
-            "contract": "Initializable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
-            "retypedFrom": "bool"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
-          },
-          {
-            "label": "name",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_string_storage",
-            "contract": "Ship",
-            "src": "contracts\\BeaconProxy\\Ship.sol:7"
-          },
-          {
-            "label": "fuel",
-            "offset": 0,
-            "slot": "2",
-            "type": "t_uint256",
-            "contract": "Ship",
-            "src": "contracts\\BeaconProxy\\Ship.sol:8"
-          }
-        ],
-        "types": {
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_string_storage": {
-            "label": "string",
-            "numberOfBytes": "32"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
           },
           "t_uint8": {
             "label": "uint8",

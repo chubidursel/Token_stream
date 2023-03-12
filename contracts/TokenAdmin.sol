@@ -19,18 +19,14 @@ contract TokenAdmin {
         return token.balanceOf(address(this));
     }
 
-    function avalibleBalanceContract()public virtual view returns(uint){
-        return token.balanceOf(address(this));
-    }
+    function avalibleBalanceContract()public virtual view returns(uint){}
+
+    function currentBalanceContract()public virtual view returns(uint256){}
 
 // -------------- Access roles ---------------
     address public owner;
 
     address public administrator;
-
-    constructor(address _owner){
-        owner = _owner;
-    }
 
     modifier onlyOwner(){
         require(owner == msg.sender, "You are not an owner!");

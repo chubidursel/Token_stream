@@ -1,25 +1,17 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.17;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./StreamLogic.sol";
 import "./ArrayLib.sol";
 import "./Outsource.sol";
 
-contract Company is StreamLogic, OutsourceTask {
+
+contract Company is StreamLogic, OutsourceTask, Initializable{
 
 	using ArrayLib for address[];
 
-    function avalibleBalanceContract()public override(TokenAdmin, OutsourceTask) view returns(uint){
-        return super.avalibleBalanceContract();
-    }
-    
-    function currentBalanceContract()public override(StreamLogic, TokenAdmin) view returns(uint){
-        return super.currentBalanceContract();
-    }
 
-    function avalibleBalanceContract()public override(TokenAdmin, OutsourceTask) view returns(uint){
-        return token.balanceOf(address(this)) - fundsLocked; // super
-    }
 
     // ADD EVENTS
     event AddEmployee(address _who, uint _rate, uint when);
@@ -27,9 +19,13 @@ contract Company is StreamLogic, OutsourceTask {
 
     string public name;
 
-    constructor (string memory _name, address _addressOwner)StreamLogic(_addressOwner){
+// INSTAED CONSTRUCTOR
+    function initialize(string memory _name, address _owner) public initializer {
         name = _name;
+        owner = _owner;
+        tokenLimitMaxHoursPerPerson = 10 hours;
     }
+
 
     struct Employee{
         address who;
@@ -92,7 +88,7 @@ contract Company is StreamLogic, OutsourceTask {
 // Set up all restrictoins tru DAO?
 
     // -------- Solution #1 (restriction on each stream)
-    uint public tokenLimitMaxHoursPerPerson = 10 hours; // Max amount hours of each stream with enough funds;
+    uint public tokenLimitMaxHoursPerPerson; // Max amount hours of each stream with enough funds;
 
     function validToStream(address _who)private view returns(bool){
          return  getTokenLimitToStreamOne(_who) < currentBalanceContract();
@@ -141,6 +137,18 @@ contract Company is StreamLogic, OutsourceTask {
         token.transfer(owner, balanceContract());
     }
 
+
+    //-------DEV-------
+    function version()public pure returns(string memory){
+        return "V 0.3.0";
+    }
+
+    function avalibleBalanceContract()public override(TokenAdmin, OutsourceTask) view returns(uint){
+        return super.avalibleBalanceContract();
+    }
+    function currentBalanceContract()public override(StreamLogic, TokenAdmin) view returns(uint){
+        return super.currentBalanceContract();
+    }
     function supportFlowaryInterface()public pure returns(bool){
         return true;
     }
