@@ -10,39 +10,32 @@ async function main() {
   const [deployer, acc1, acc2, acc3, acc4, acc5, acc6, admin] = await ethers.getSigners();
 
 // ----------------CONTRACTS---------------------
-   // ----------------DEPLOY LIB---------------------
-   const Lib = await ethers.getContractFactory("ArrayLib");
-   const lib = await Lib.deploy();
- 
-   console.log("LIB IS DONE: ", lib.address)
- // ----------------CONTRACTS---------------------
-   const Contract = await ethers.getContractFactory("Company", {
-     libraries: {
-       ArrayLib: lib.address
-     }});
- 
-   const ContractUSDT = await ethers.getContractFactory("StableCoin");
-   const contractUSDT = await ContractUSDT.deploy();
- 
-   const ContractFactory = await ethers.getContractFactory("CompanyFactory", {
-     libraries: {
-       ArrayLib: lib.address
-     }});
-   const contractFactory = await ContractFactory.deploy();
- 
-   await contractUSDT.deployed();
-  
-   // ------------------ TX_COMPANY_SETTING ------------------  
-   const txF = await contractFactory.createCompany("Tesla");
-   await txF.wait()
-   console.log("🏭 Creating new Contract || GasPrice: ", txF.gasPrice?.toString())
 
-   let eventFilter = contractFactory.filters.Creation();
-   let events = await contractFactory.queryFilter(eventFilter);
+// #1 Deploy Stablecoin
+const ContractUSDT = await ethers.getContractFactory("StableCoin");
+const contractUSDT = await ContractUSDT.deploy();
+await contractUSDT.deployed();
+
+// #2 Deploy Company Implementaion
+const Company = await ethers.getContractFactory("Company");
+const companyIMPL = await Company.deploy()
+
+// #3 Deploy Factory
+ const Factory = await ethers.getContractFactory("CompanyFactory");
+ const factory = await Factory.deploy(companyIMPL.address);
+ await factory.deployed();
+
+ console.log("🏭 Factory deployed", factory.address);
+ console.log("🏭 Factory beacon", await factory.beacon());
+
+// #4 Create new company and get its address
+ await factory.createCompany("Tesla")
+
+   let eventFilter = factory.filters.Creation();
+   let events = await factory.queryFilter(eventFilter);
    const addressCompany = events[0]?.args[0]
-   
-// SETTING NEW CONTRACT FROM FACTORY
-   const contract = Contract.attach(
+  
+   const contract = companyIMPL.attach(
     addressCompany
   );
 
@@ -53,23 +46,20 @@ async function main() {
 
   // ------------------ TX_COMPANY_SETTING ------------------  
 
-  // const tokenToMint = ethers.BigNumber.from("1000000000000000000000") // TO STRING?
-  // console.log("!!!!!!!!!!!!!!!!", tokenToMint)
-  // console.log("!!!!!!!!!!!!@@@@@@@", BigInt(100))
 
   const tokensToMint = ethers.utils.parseEther("10000.0")
   const employeeRate = ethers.utils.parseEther("0.1")
 
 
     const tx = await contract.setToken(contractUSDT.address);
-    console.log("✅ Token_set|| GasPrice: ", tx.gasPrice?.toString())
+    console.log("✅ Token_set")
 
   const txCoin = await contractUSDT.mint(contract.address, tokensToMint)
-  console.log("✅🟡 Transfer token done! || GasPrice: ", txCoin.gasPrice?.toString())
+  console.log("✅🟡 Transfer token done! 1000$")
   await txCoin.wait()
 
-    const tx3 = await contract.addEmployee(acc1.address, employeeRate); // calculation of rate grab from Front
-    console.log("✅ Emplployee #1 added|| GasPrice: ", tx3.gasPrice?.toString())
+    await contract.addEmployee(acc1.address, employeeRate); // calculation of rate grab from Front
+    console.log("✅ Emplployee #1 added")
 
  // ------------------ TX_COMPANY_OPERATION ------------------ 
  console.log()
@@ -171,10 +161,10 @@ async function main() {
   console.log("🟡PS:   Real Balance [Freelancer #6]: ", ((await contractUSDT.balanceOf(acc6.address))).toString())
   console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
 
-  await contract.createOutsourceJob(acc6.address, "create WEBsite", ethers.utils.parseEther("10"), 100, false);
+  await contract.createOutsourceJob(acc6.address, "create WEBsite", ethers.utils.parseEther("10"), 100, 0);
   console.log("👷 FREELANCER #6 ")
 
-  const idd = (await contract.id()).sub(1)
+  const idd = (await contract.OutsourceID()).sub(1)
 
   const data1 = await contract.listOutsource(idd);
   // console.log(data1)
@@ -204,7 +194,7 @@ async function main() {
   console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
   console.log("🟡BALANCE_WITH_LOCKED [Company SC]: ", (ethers.utils.formatEther(await contract.avalibleBalanceContract())))
 
-  await contract.createOutsourceJob(acc6.address, "create WEBsite", ethers.utils.parseEther("100"), 200, false);
+  await contract.createOutsourceJob(acc6.address, "create WEBsite", ethers.utils.parseEther("100"), 200, 0);
   console.log("👷 FREELANCER #6 ")
 
   console.log("🟡Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))

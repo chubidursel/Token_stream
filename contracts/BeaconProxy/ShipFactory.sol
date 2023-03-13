@@ -23,6 +23,10 @@ contract ShipFactory {
         ships[shipId] = address(ship);
     }
 
+    function demoSelector(uint _num)public pure returns(bytes memory){
+        return abi.encodeWithSelector(Ship(address(0)).initialize.selector, "Bob", _num);
+    }
+
     function getShipAddress(uint32 shipId) external view returns (address) {
         return ships[shipId];
     }

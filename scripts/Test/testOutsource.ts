@@ -10,55 +10,31 @@ async function main() {
 
 // ----------------CONTRACTS---------------------
 
-   // ------------ #1 DEPLOY LIB--------------------
-   const Lib = await ethers.getContractFactory("ArrayLib");
-   const lib = await Lib.deploy();
+// #1 Deploy Stablecoin
+const ContractUSDT = await ethers.getContractFactory("StableCoin");
+const contractUSDT = await ContractUSDT.deploy();
+await contractUSDT.deployed();
 
-   console.log("LIBRARY IS DONE: ", lib.address)
+// #2 Deploy Company Implementaion
+const Company = await ethers.getContractFactory("Company");
+const companyIMPL = await Company.deploy()
 
-   // ------------ #2 DEPLOY COMPANY IMPL--------------------
-   const CompanyImpl = await ethers.getContractFactory("Company");
-   const Bcn = await ethers.getContractFactory("CompanyBeacon");
-  //  const companyImpl = await CompanyImpl.deploy();
- 
-  //  console.log("COMPANY IMPLEMENTATION IS DONE: ", companyImpl.address)
+// #3 Deploy Factory
+ const Factory = await ethers.getContractFactory("CompanyFactory");
+ const factory = await Factory.deploy(companyIMPL.address);
+ await factory.deployed();
 
+ console.log("🏭 Factory deployed", factory.address);
+ console.log("🏭 Factory beacon", await factory.beacon());
 
-// ------------ #???  DEPLOY BEACON--------------------
-const Beacon = await upgrades.deployBeacon(CompanyImpl);
-const beacon = await Beacon.deployed();
-console.log("BEACON: ", beacon.address)
-
-
-   // ------------ #4 DEPLOY FACTORY--------------------
-   const Factory = await ethers.getContractFactory("CompanyFactory");
-   const factory = await Factory.deploy(beacon.address);
-
-   console.log("FACTORY IS DONE: ", factory.address)
-
-
- // ----------------#5 deploy USDT  ---------------------
-
-   const ContractUSDT = await ethers.getContractFactory("StableCoin");
-   const contractUSDT = await ContractUSDT.deploy();
- 
-   console.log("USDT IS DONE: ", contractUSDT.address)
-
-   // ------------------ TX_COMPANY_SETTING ------------------
-   const txF = await factory.createCompany("Apple");
-   await txF.wait()
-   console.log("🏭 Creating new Contract")
+// #4 Create new company and get its address
+ await factory.createCompany("Tesla")
 
    let eventFilter = factory.filters.Creation();
    let events = await factory.queryFilter(eventFilter);
    const addressCompany = events[0]?.args[0]
-   
-// SETTING NEW CONTRACT FROM FACTORY
-  const Contract = await ethers.getContractFactory("Company", {
-    libraries: {
-      ArrayLib: lib.address
-    }});
-   const contract = Contract.attach(
+  
+   const contract = companyIMPL.attach(
     addressCompany
   );
 
@@ -68,10 +44,6 @@ console.log("BEACON: ", beacon.address)
   console.log("✅ All Contracts has been deployed!")
 
   // ------------------ TX_COMPANY_SETTING ------------------  
-
-  // const tokenToMint = ethers.BigNumber.from("1000000000000000000000") // TO STRING?
-  // console.log("!!!!!!!!!!!!!!!!", tokenToMint)
-  // console.log("!!!!!!!!!!!!@@@@@@@", BigInt(100))
 
   const tokensToMint = ethers.utils.parseEther("10000.0")
   const employeeRate = ethers.utils.parseEther("0.1")

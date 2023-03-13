@@ -68,9 +68,9 @@
         }
       }
     },
-    "b82731658ca1e7bdd2127709f86ba0dfcbd1bc55773a1b204222ece01cf869f5": {
+    "cc68f3084c752d26e7b7b4debbd244b22f0f2e4f720254006e00768d1db81085": {
       "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      "txHash": "0xd1d8b6b758bbfb651c243179c20fdcaebedb696f078b8d75b6b4fc81854b6071",
+      "txHash": "0xa0f2e99fa35dafd5cf4ea1f2c47509a78dd376165c98de3c2f8a3040c6195742",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -78,7 +78,7 @@
             "label": "token",
             "offset": 0,
             "slot": "0",
-            "type": "t_contract(IERC20)10937",
+            "type": "t_contract(IERC20)3162",
             "contract": "TokenAdmin",
             "src": "contracts\\TokenAdmin.sol:12"
           },
@@ -102,7 +102,7 @@
             "label": "getStream",
             "offset": 0,
             "slot": "3",
-            "type": "t_mapping(t_address,t_struct(Stream)9897_storage)",
+            "type": "t_mapping(t_address,t_struct(Stream)2565_storage)",
             "contract": "StreamLogic",
             "src": "contracts\\StreamLogic.sol:32"
           },
@@ -166,7 +166,7 @@
             "label": "listOutsource",
             "offset": 0,
             "slot": "11",
-            "type": "t_mapping(t_uint256,t_struct(Outsource)9502_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Outsource)2170_storage)",
             "contract": "OutsourceTask",
             "src": "contracts\\Outsource.sol:27"
           },
@@ -201,15 +201,15 @@
             "slot": "14",
             "type": "t_string_storage",
             "contract": "Company",
-            "src": "contracts\\Company.sol:29"
+            "src": "contracts\\Company.sol:20"
           },
           {
             "label": "allEmployee",
             "offset": 0,
             "slot": "15",
-            "type": "t_mapping(t_address,t_struct(Employee)8992_storage)",
+            "type": "t_mapping(t_address,t_struct(Employee)1658_storage)",
             "contract": "Company",
-            "src": "contracts\\Company.sol:47"
+            "src": "contracts\\Company.sol:36"
           },
           {
             "label": "allEmployeeList",
@@ -217,7 +217,7 @@
             "slot": "16",
             "type": "t_array(t_address)dyn_storage",
             "contract": "Company",
-            "src": "contracts\\Company.sol:49"
+            "src": "contracts\\Company.sol:38"
           },
           {
             "label": "tokenLimitMaxHoursPerPerson",
@@ -225,7 +225,7 @@
             "slot": "17",
             "type": "t_uint256",
             "contract": "Company",
-            "src": "contracts\\Company.sol:102"
+            "src": "contracts\\Company.sol:91"
           }
         ],
         "types": {
@@ -241,11 +241,11 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(IERC20)10937": {
+          "t_contract(IERC20)3162": {
             "label": "contract IERC20",
             "numberOfBytes": "20"
           },
-          "t_enum(Status)9507": {
+          "t_enum(Status)2175": {
             "label": "enum OutsourceTask.Status",
             "members": [
               "None",
@@ -255,11 +255,11 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_mapping(t_address,t_struct(Employee)8992_storage)": {
+          "t_mapping(t_address,t_struct(Employee)1658_storage)": {
             "label": "mapping(address => struct Company.Employee)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_address,t_struct(Stream)9897_storage)": {
+          "t_mapping(t_address,t_struct(Stream)2565_storage)": {
             "label": "mapping(address => struct StreamLogic.Stream)",
             "numberOfBytes": "32"
           },
@@ -267,7 +267,7 @@
             "label": "mapping(address => uint256)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(Outsource)9502_storage)": {
+          "t_mapping(t_uint256,t_struct(Outsource)2170_storage)": {
             "label": "mapping(uint256 => struct OutsourceTask.Outsource)",
             "numberOfBytes": "32"
           },
@@ -275,7 +275,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(Employee)8992_storage": {
+          "t_struct(Employee)1658_storage": {
             "label": "struct Company.Employee",
             "members": [
               {
@@ -299,7 +299,7 @@
             ],
             "numberOfBytes": "96"
           },
-          "t_struct(Outsource)9502_storage": {
+          "t_struct(Outsource)2170_storage": {
             "label": "struct OutsourceTask.Outsource",
             "members": [
               {
@@ -346,14 +346,14 @@
               },
               {
                 "label": "status",
-                "type": "t_enum(Status)9507",
+                "type": "t_enum(Status)2175",
                 "offset": 1,
                 "slot": "6"
               }
             ],
             "numberOfBytes": "224"
           },
-          "t_struct(Stream)9897_storage": {
+          "t_struct(Stream)2565_storage": {
             "label": "struct StreamLogic.Stream",
             "members": [
               {

@@ -12,31 +12,31 @@ async function main() {
 
    console.log("LIBRARY IS DONE: ", lib.address)
 
- // ------------ #2 Deploy Beacon --------------------
+ // ------------ #2 Deploy Company BluePrint --------------------
 
- const company = await ethers.getContractFactory("Company");
-
- const beacon = await upgrades.deployBeacon(company);
-
- await beacon.deployed();
-
- console.log("Beacon deployed: ", beacon.address);
+//const Company = await ethers.getContractFactory("Company", {libraries: { ArrayLib: lib.address}});
+const Company = await ethers.getContractFactory("Company");
+const companyIMPL = await Company.deploy()
 
  // ------------ #3 Deploy Facotry --------------------
 
  const Factory = await ethers.getContractFactory("CompanyFactory");
 
- const factory = await Factory.deploy(beacon.address);
+ const factory = await Factory.deploy(companyIMPL.address);
 
  await factory.deployed();
 
- console.log("factory deployed", factory.address);
+ console.log("🏭 Factory deployed", factory.address);
+ console.log("🏭 Factory beacon", await factory.beacon());
 
 console.log("Test amount of companies: ", await factory.totalAmounOfComapnies())
 
  // ------------ #4 CREATE NEW INSTANCE --------------------
 
 await factory.createCompany("Tesla") // ERR > 'Address: low-level delegate call failed'
+
+console.log("Test amount of companies: ", await factory.totalAmounOfComapnies())
+
 
   console.log(`🏁 FINISHED 🏁`);
 }
@@ -48,6 +48,8 @@ main().catch((error) => {
 });
 
 
+
+//----------------------------- INFO ----------------------
 // https://forum.openzeppelin.com/t/how-to-deploy-new-instances-using-beacon-proxy-from-a-factory-when-using-openzeppelin-hardhat-upgrades/27801/9
 
 // NFT factory in Beacon and Hardhat
@@ -62,3 +64,42 @@ main().catch((error) => {
 
 // Random dude from medium Hardhat + Beacon
 //https://medium.com/coinmonks/how-to-create-a-beacon-proxy-3d55335f7353
+
+// OLD VERSION!!!!!!!!
+// async function main() {
+//   console.log("Starting 🏃")
+
+//    // ------------ #1 DEPLOY LIB--------------------
+//    const Lib = await ethers.getContractFactory("ArrayLib");
+//    const lib = await Lib.deploy();
+
+//    console.log("LIBRARY IS DONE: ", lib.address)
+
+//  // ------------ #2 Deploy Beacon --------------------
+
+//  const company = await ethers.getContractFactory("Company");
+
+//  const beacon = await upgrades.deployBeacon(company);
+
+//  await beacon.deployed();
+
+//  console.log("Beacon deployed: ", beacon.address);
+
+//  // ------------ #3 Deploy Facotry --------------------
+
+//  const Factory = await ethers.getContractFactory("CompanyFactory");
+
+//  const factory = await Factory.deploy(beacon.address);
+
+//  await factory.deployed();
+
+//  console.log("factory deployed", factory.address);
+
+// console.log("Test amount of companies: ", await factory.totalAmounOfComapnies())
+
+//  // ------------ #4 CREATE NEW INSTANCE --------------------
+
+// await factory.createCompany("Tesla") // ERR > 'Address: low-level delegate call failed'
+
+//   console.log(`🏁 FINISHED 🏁`);
+// }

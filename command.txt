@@ -10,8 +10,8 @@ npx hardhat run --network goerli scripts/deployFactory.ts
 npx hardhat run --network mumbai scripts/deployFactory.ts  👳
 npx hardhat run --network bsc scripts/deployLib.ts  🧧
 
-npx hardhat verify --network goerli 0x77BF84946F07c041B5bA077fa7F99a89b8C3f41d "XXX" 0x98162D17D4d15c945B7418475EdEb4d9c0335684
-npx hardhat verify --network goerli 0x28a7aF828d93B29BB210D7A02703A53E7C39331f
+npx hardhat verify --network goerli 0x0ea62B158B5c5995a0864331e286e9FC0a207A33 0xB8c683CcAa269932f179641B36582710a7Db4c1a
+npx hardhat verify --network goerli 0xB8c683CcAa269932f179641B36582710a7Db4c1a
 npx hardhat verify --network mumbai 0xEAD30D869927e0f370376FD283688bd87284ac4b  👳
 npx hardhat verify --network bsc 0xA1E854B80cBC58A3960904113C0d43c8B193a24f  🧧
 

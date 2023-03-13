@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract Ship is Initializable {
+contract ShipV2 is Initializable {
     string public name;
     uint256 public fuel;
 
@@ -15,5 +15,8 @@ contract Ship is Initializable {
     function move() public {
         require(fuel > 0, "no fuel");
         fuel--;
+    }
+    function refuel() public {
+        fuel++;
     }
 }

@@ -2,46 +2,39 @@ import { providers } from "ethers";
 import { ethers } from "hardhat";
 
 // npx hardhat clean && npx hardhat compile
-// npx hardhat run scripts/Test/testLogic.ts
+// npx hardhat run scripts/Test/testMain.ts
 
 async function main() {
   console.log("Starting 🏃")
 
   const [deployer, acc1, acc2, acc3, acc4, acc5, acc6, admin] = await ethers.getSigners();
-
-  // ----------------DEPLOY LIB---------------------
-  const Lib = await ethers.getContractFactory("ArrayLib");
-  const lib = await Lib.deploy();
-
-  console.log("LIB IS DONE: ", lib.address)
 // ----------------CONTRACTS---------------------
-  const Contract = await ethers.getContractFactory("Company", {
-    libraries: {
-      ArrayLib: lib.address
-    }});
 
-  const ContractUSDT = await ethers.getContractFactory("StableCoin");
-  const contractUSDT = await ContractUSDT.deploy();
+// #1 Deploy Stablecoin
+const ContractUSDT = await ethers.getContractFactory("StableCoin");
+const contractUSDT = await ContractUSDT.deploy();
+await contractUSDT.deployed();
 
-  const ContractFactory = await ethers.getContractFactory("CompanyFactory", {
-    libraries: {
-      ArrayLib: lib.address
-    }});
-  const contractFactory = await ContractFactory.deploy();
+// #2 Deploy Company Implementaion
+const Company = await ethers.getContractFactory("Company");
+const companyIMPL = await Company.deploy()
 
-  await contractUSDT.deployed();
+// #3 Deploy Factory
+ const Factory = await ethers.getContractFactory("CompanyFactory");
+ const factory = await Factory.deploy(companyIMPL.address);
+ await factory.deployed();
+
+ console.log("🏭 Factory deployed", factory.address);
+ console.log("🏭 Factory beacon", await factory.beacon());
+
+// #4 Create new company and get its address
+ await factory.createCompany("Tesla")
+
+   let eventFilter = factory.filters.Creation();
+   let events = await factory.queryFilter(eventFilter);
+   const addressCompany = events[0]?.args[0]
   
-   // ------------------ TX_COMPANY_SETTING ------------------  
-   const txF = await contractFactory.createCompany("Tesla");
-   await txF.wait()
-   console.log("🏭 Creating new Contract || GasPrice: ", txF.gasPrice?.toString())
-
-   let eventFilter = contractFactory.filters.Creation();
-   let events = await contractFactory.queryFilter(eventFilter);
-   const addressCompany = events[0].args[0]
-   
-// SETTING NEW CONTRACT FROM FACTORY
-   const contract = Contract.attach(
+   const contract = companyIMPL.attach(
     addressCompany
   );
 

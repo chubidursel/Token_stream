@@ -33,7 +33,7 @@ contract CompanyFactory {
         BeaconProxy newCompany = new BeaconProxy(
             address(beacon), 
             //abi.encodeWithSelector(0x8b39ef54, _name, msg.sender);
-            abi.encodeWithSelector(Company.initialize.selector, _name, 0x98162D17D4d15c945B7418475EdEb4d9c0335684)                                                               
+            abi.encodeWithSelector(Company.initialize.selector, _name, msg.sender)                                                               
         );
 
         //address newCompanyAddr = address(new Company(_name, msg.sender)); // OLD VERSION

@@ -11,8 +11,6 @@ contract Company is StreamLogic, OutsourceTask, Initializable{
 
 	using ArrayLib for address[];
 
-
-
     // ADD EVENTS
     event AddEmployee(address _who, uint _rate, uint when);
     event WithdrawEmpl(address who, uint tokenEarned, uint when);
@@ -142,14 +140,15 @@ contract Company is StreamLogic, OutsourceTask, Initializable{
     function version()public pure returns(string memory){
         return "V 0.3.0";
     }
-
+    function supportFlowaryInterface()public pure returns(bool){
+        return true;
+    }
+    
     function avalibleBalanceContract()public override(TokenAdmin, OutsourceTask) view returns(uint){
         return super.avalibleBalanceContract();
     }
     function currentBalanceContract()public override(StreamLogic, TokenAdmin) view returns(uint){
         return super.currentBalanceContract();
     }
-    function supportFlowaryInterface()public pure returns(bool){
-        return true;
-    }
+
 }
