@@ -115,43 +115,43 @@ abstract contract StreamLogic is TokenAdmin {
 	/// @dev This function is called from outside
 	/// @dev Reset ETF and CR to Zero and delete all streams from the list
 	
-	// function finishAllStream() public {
-	// 	if(amountActiveStreams() == 0) revert NoActiveStream();
+	function finishAllStream() public {
+		if(amountActiveStreams() == 0) revert NoActiveStream();
 
 	
-	// 	if(block.timestamp > EFT){
-	// 		// IF Liquidation we send as much token as in SC and write down all debt
-	// 		for(uint i = 0; i < activeStreamAddress.length; i++){
-	// 			address loopAddr = activeStreamAddress[i];
-	// 			addrListDebt.push(loopAddr);
-	// 			debtToEmployee[loopAddr] = currentBalanceEmployee(loopAddr) - currentBalanceLiquidation(loopAddr);
+		if(block.timestamp > EFT){
+			// IF Liquidation we send as much token as in SC and write down all debt
+			for(uint i = 0; i < activeStreamAddress.length; i++){
+				address loopAddr = activeStreamAddress[i];
+				addrListDebt.push(loopAddr);
+				debtToEmployee[loopAddr] = currentBalanceEmployee(loopAddr) - currentBalanceLiquidation(loopAddr);
 
-	// 			token.transfer(loopAddr, currentBalanceLiquidation(loopAddr));
+				token.transfer(loopAddr, currentBalanceLiquidation(loopAddr));
 
-	// 			getStream[loopAddr].active = false;
-	// 			getStream[loopAddr].startAt = 0;
-	// 		}
+				getStream[loopAddr].active = false;
+				getStream[loopAddr].startAt = 0;
+			}
 
-	// 		liqudation = true;
+			liqudation = true;
 
-	// 	} else {
-	// 		for(uint i = 0; i < activeStreamAddress.length; i++){
-	// 			address loopAddr = activeStreamAddress[i];
+		} else {
+			for(uint i = 0; i < activeStreamAddress.length; i++){
+				address loopAddr = activeStreamAddress[i];
 
-	// 			token.transfer(loopAddr, currentBalanceEmployee(loopAddr));
+				token.transfer(loopAddr, currentBalanceEmployee(loopAddr));
 
-	// 		     emit StreamFinished(loopAddr, currentBalanceEmployee(loopAddr), block.timestamp, getStream[loopAddr].startAt);
+			     emit StreamFinished(loopAddr, currentBalanceEmployee(loopAddr), block.timestamp, getStream[loopAddr].startAt);
 
-	// 			getStream[loopAddr].active = false;
-	// 			getStream[loopAddr].startAt = 0;
-	// 		}
-	// 	}
+				getStream[loopAddr].active = false;
+				getStream[loopAddr].startAt = 0;
+			}
+		}
 
-	// 	activeStreamAddress = new address[](0);
+		activeStreamAddress = new address[](0);
 
-	// 	CR = 0;
-	// 	EFT = 0;
-	// }
+		CR = 0;
+		EFT = 0;
+	}
 
 	function _withdrawEmployee(address _who) internal returns(uint){
 		//require(getStream[_who].active, "This user doesnt have an active stream");

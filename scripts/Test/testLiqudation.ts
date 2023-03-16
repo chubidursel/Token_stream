@@ -9,26 +9,33 @@ async function main() {
 
   const [deployer, acc1, acc2, acc3, acc4, acc5, acc6, admin] = await ethers.getSigners();
 
-  const Contract = await ethers.getContractFactory("Company");
-  //const contract = await Contract.deploy("RogaAndKopita", deployer.address); // << DEPLOY CONTRACT FROM FACTORY
+  // ----------------CONTRACTS---------------------
 
-  const ContractUSDT = await ethers.getContractFactory("StableCoin");
-  const contractUSDT = await ContractUSDT.deploy();
+// #1 Deploy Stablecoin
+const ContractUSDT = await ethers.getContractFactory("StableCoin");
+const contractUSDT = await ContractUSDT.deploy();
+await contractUSDT.deployed();
 
-  const ContractFactory = await ethers.getContractFactory("CompanyFactory");
-  const contractFactory = await ContractFactory.deploy();
+// #2 Deploy Company Implementaion
+const Company = await ethers.getContractFactory("Company");
+const companyIMPL = await Company.deploy()
 
-  await contractUSDT.deployed();
+// #3 Deploy Factory
+ const Factory = await ethers.getContractFactory("CompanyFactory");
+ const factory = await Factory.deploy(companyIMPL.address);
+ await factory.deployed();
 
-   const txF = await contractFactory.createCompany("Tesla");
-   await txF.wait()
-   console.log("🏭 Creating new Contract || GasPrice: ", txF.gasPrice?.toString())
+ console.log("🏭 Factory deployed", factory.address);
+ console.log("🏭 Factory beacon", await factory.beacon());
 
-   let eventFilter = contractFactory.filters.Creation();
-   let events = await contractFactory.queryFilter(eventFilter);
-   const addressCompany = events[0].args[0]
+// #4 Create new company and get its address
+ await factory.createCompany("Tesla")
 
-   const contract = Contract.attach(
+   let eventFilter = factory.filters.Creation();
+   let events = await factory.queryFilter(eventFilter);
+   const addressCompany = events[0]?.args[0]
+  
+   const contract = companyIMPL.attach(
     addressCompany
   );
 
@@ -36,18 +43,14 @@ async function main() {
 
  
   console.log("✅ All Contracts has been deployed!")
-  
+
+    // ----------------TX---------------------
     const tx = await contract.setToken(contractUSDT.address);
     console.log("✅ Token_set|| GasPrice: ", tx.gasPrice?.toString())
 
   const txCoin = await contractUSDT.mint(contract.address, 1_000_000)
   console.log("✅🟡 Transfer token done! || Transfer: ", 1_000_000)
   await txCoin.wait()
-
-  console.log("---------📈 BUFFER #2 INFO 📈------------")
-  console.log(`📈 [SOL#2] Token Limit to add new Employee:  ${(await contract.getTokenLimitToAddNewEmployee(10)).toNumber()}`)
-  console.log("📈 [SOL#2] Balance - Limit = ", ((await contract.currentBalanceContract()).toNumber() - (await contract.getTokenLimitToAddNewEmployee(10)).toNumber()))
-  
 
     await contract.addEmployee(acc1.address, 1); 
     console.log("✅ Employee added || Rate [token/sec]: ", ((await contract.allEmployee(acc1.address)).flowRate).toNumber())
@@ -137,10 +140,8 @@ console.log()
 console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(addressCompany)).toString())
 await contractUSDT.mint(contract.address, 5_000_000)
 console.log("✅🟡 Minting token done | 5🍋")
-console.log(`📈 [SOL#2] Token Limit to add new Employee:  ${(await contract.getTokenLimitToAddNewEmployee(2)).toNumber()}`)
 await contract.addEmployee(acc2.address, 2); 
 console.log("✅ Employee #2 added")
-console.log(`📈 [SOL#2] Token Limit to add new Employee:  ${(await contract.getTokenLimitToAddNewEmployee(2)).toNumber()}`)
 await contract.addEmployee(acc3.address, 3); 
 console.log("✅ Employee #3 added")
 console.log("📄 Amount Employee: ", (await contract.amountEmployee()).toNumber())
@@ -231,6 +232,84 @@ console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(add
 
 
 
+console.log()
+console.log("-------------------- LIQUIDATION AND OUTSOURCE [👷] --------------")
+console.log()
+
+//#1 RESET CONTRACT FUNDS
+await contract.withdrawTokens()
+console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(addressCompany)).toString())
+const tokensToMint = ethers.utils.parseEther("100.0")
+await contractUSDT.mint(contract.address, tokensToMint)
+console.log("🟡Real Balance [Company SC]: ", (await contractUSDT.balanceOf(addressCompany)).toString())
+
+//#2 Add outsource
+const who = acc5.address
+const task = "Create Site"
+const wage = ethers.utils.parseEther("10")
+const deadline = 100;
+const buffer = 0
+
+await contract.createOutsourceJob(who, task, wage, deadline, buffer)
+console.log("👨 Account5 Create OutSource Task")
+
+//#3 START STREAM
+await contract.setHLStartStream(10)
+console.log("setHLStartStream > 10")
+const salaryStream = ethers.utils.parseEther("1.0")
+await contract.addEmployee(acc6.address, salaryStream); 
+console.log("✅ Employee #6 added")
+
+await contract.start(acc6.address);
+console.log("👷 Emoloyee #6 start STREAMING")
+
+
+console.log("-------BALANCE CHECK-------")
+console.log("🌊 avalibleBalanceContract (): ", (ethers.utils.formatEther(await contract.avalibleBalanceContract()))) 
+console.log("🌊 currentBalanceContract (): ", (ethers.utils.formatEther(await contract.currentBalanceContract())))
+console.log("🟡 Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+console.log()
+console.log("🟡Real Balance [Employee #6]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc6.address))))
+console.log("🟡Real Balance [Employee #5]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc5.address))))
+console.log("----------------")
+
+
+const blockTimestamp = (await ethers.provider.getBlock(await ethers.provider.getBlockNumber())).timestamp;
+await ethers.provider.send("evm_mine", [blockTimestamp + 110]); 
+console.log("Wait 110 sec ...")
+
+
+console.log("-------BALANCE CHECK-------")
+console.log("🌊 avalibleBalanceContract (): ", (ethers.utils.formatEther(await contract.avalibleBalanceContract()))) 
+console.log("🌊 currentBalanceContract (): ", (ethers.utils.formatEther(await contract.currentBalanceContract())))
+console.log("🟡 Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+console.log()
+console.log("🟡Real Balance [Employee #6]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc6.address))))
+console.log("🟡Real Balance [Employee #5]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc5.address))))
+console.log("----------------")
+
+
+console.log("-----------INFO LIQUDATION ---------")
+console.log("🔥 Liquidation: ", await contract.liqudation())
+console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+
+await contract.finish(acc6.address);
+console.log("👷 Emoloyee #6 LEFT")
+
+
+console.log("-------BALANCE & LIQUDATION CHECK-------")
+console.log("🔥 Liquidation: ", await contract.liqudation())
+console.log("📄Stream [Amount Stream]: ", (await contract.amountActiveStreams()).toString())
+
+console.log("🌊 avalibleBalanceContract (): ", (ethers.utils.formatEther(await contract.avalibleBalanceContract()))) 
+console.log("🌊 currentBalanceContract (): ", (ethers.utils.formatEther(await contract.currentBalanceContract())))
+console.log("🟡 Real Balance [Company SC]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(addressCompany))))
+console.log()
+console.log("🟡Real Balance [Employee #6]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc6.address))))
+console.log("🟡Real Balance [Employee #5]: ", (ethers.utils.formatEther(await contractUSDT.balanceOf(acc5.address))))
+console.log("----------------")
+
+  
   console.log(`🏁 FINISHED 🏁`);
 }
 

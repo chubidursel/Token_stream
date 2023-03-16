@@ -25,15 +25,17 @@ BSC🧧    ARR_LIBRARY => 0xF21319a05548495D49141Db8653C5B4F622AdB7c
 
     > npx hardhat console --network goerli    
 
-const c = await ethers.getContractAt("Company", '0x77BF84946F07c041B5bA077fa7F99a89b8C3f41d')                   // TKOEN2 0x09658986040e210120c30e38d59A4517716A4E8F
+const c = await ethers.getContractAt("Company", '0x9438F688D9B8F8e299a3b763061E224E2eA830D4')                   // TKOEN2 0x09658986040e210120c30e38d59A4517716A4E8F
 const contractUSDT = await ethers.getContractAt("StableCoin", '0xD049815A3d490CBCF73415A65384652D5F15a367') // 0xD049815A3d490CBCF73415A65384652D5F15a367
 
 
 await c.setToken("0xD049815A3d490CBCF73415A65384652D5F15a367")
 
-await contractUSDT.mint(c.address, ethers.utils.parseEther("1000.0"))
+await contractUSDT.mint(c.address, ethers.utils.parseEther("7000.0"))
 
 await c.changeAdmin("0x1AFaF7463894656662E6BdcbDC77522775E6acbB")
+
+await c.addEmployee(")
 
 ----- GET INFO ----
 (await c.currentBalanceContract()).toNumber()
