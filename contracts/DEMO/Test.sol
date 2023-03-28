@@ -7,6 +7,8 @@ contract Test{
     }
 
     uint public num;
+    
+    string public str;
 
     function setNum(uint _num)public{
         num =_num;

@@ -11,7 +11,6 @@ contract Company is StreamLogic, OutsourceTask, Initializable{
 
 	using ArrayLib for address[];
 
-    // ADD EVENTS
     event AddEmployee(address _who, uint _rate, uint when);
     event WithdrawEmpl(address who, uint tokenEarned, uint when);
 
@@ -24,10 +23,15 @@ contract Company is StreamLogic, OutsourceTask, Initializable{
         tokenLimitMaxHoursPerPerson = 10 hours;
     }
 
-
+	/**
+     * @notice Employee profile info
+     * @param who The employee address
+     * @param flowrate The employee`s rate. token pro sec
+     * @param worker Check if this is an employee
+     */	
     struct Employee{
         address who;
-        uint256 flowRate; // 1 token / sec
+        uint256 flowRate; 
         bool worker;
     }
 
@@ -71,13 +75,14 @@ contract Company is StreamLogic, OutsourceTask, Initializable{
 
     function modifyRate(address _who, uint256 _rate) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned {
         if(getStream[_who].active) revert NoActiveStream();
+        
         allEmployee[_who].flowRate = _rate;
     }
 
     function deleteEmployee(address _who) external employeeExists(_who) ownerOrAdministrator isLiquidationHappaned{
         if(getStream[_who].active) revert NoActiveStream();
 
-        //commonRateAllEmployee -= getStream[_who].rate;
+        allEmployee[_who].worker = false;
 
         allEmployeeList.removeAddress(_who);
     }
