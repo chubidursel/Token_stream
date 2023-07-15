@@ -28,7 +28,11 @@ const config: HardhatUserConfig = {
     bsc: {
       url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
       accounts:  [`${process.env.PRIVATE_KEY}`]
-    }
+    },
+    siberium : {
+      url: 'https://rpc.test.siberium.net/',
+      accounts:  [`${process.env.PRIVATE_KEY}`]
+    },
   },
     etherscan: {
       // ETH => process.env.ETHERSCAN_VERIFY

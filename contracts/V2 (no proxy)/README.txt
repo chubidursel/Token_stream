@@ -1,0 +1,1 @@
+This is 2nd simple version with some restriction with functionality and without Proxy
