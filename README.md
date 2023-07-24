@@ -34,3 +34,16 @@ npx hardhat compile
 TEST: npx hardhat run scripts/Test/testLiqudation.ts
 DEPLOY: npx hardhat run --network goerli scripts/deployCompany.ts
 ```
+## Installation
+1. In order to deploy this protocol in new Blockchain or just create ur own implementation use this command: 
+```sh
+npx hardhat run --network goerli scripts/deployAll.ts
+```
+
+2. If you want to interact to this contract (after deployment) just use hardhat console: 
+```sh
+npx hardhat console --network goerli
+
+const c = await ethers.getContractAt("CompanyFactory", '0x76......1Dd0B')
+await c.totalAmounOfComapnies()
+```

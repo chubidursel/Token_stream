@@ -6,7 +6,7 @@ import "./ArrayLib.sol";
 import "./Outsource.sol";
 
 
-contract Company is StreamLogic, OutsourceTask {
+contract CompanySimple is StreamLogic, OutsourceTask {
 
 	using ArrayLib for address[];
 

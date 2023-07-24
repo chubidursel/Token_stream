@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import "./Company.sol";
 
 
-contract CompanyFactory {
+contract CompanyFactorySimple {
 
     event Creation(address _org, address _creator, string _what);
   
@@ -16,7 +16,7 @@ contract CompanyFactory {
 
     function createCompany(string memory _name) external {
 
-        address newCompanyAddr = address(new Company(_name, msg.sender)); 
+        address newCompanyAddr = address(new CompanySimple(_name, msg.sender)); 
 
         listOfOrg.push(newCompanyAddr);
 
